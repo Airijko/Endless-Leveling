@@ -18,7 +18,6 @@ import com.airijko.endlessskills.providers.EndlessSkillsModifierProvider;
 import com.airijko.endlessskills.skills.SkillAttributes;
 import com.airijko.endlessskills.commands.ResetSkillPointsCMD;
 
-import com.airijko.endlessskills.listeners.MobEventListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
