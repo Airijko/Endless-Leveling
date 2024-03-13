@@ -1,20 +1,23 @@
 package com.airijko.endlessskills.skills;
 
+import com.airijko.endlessskills.combat.BowDamageConfiguration;
+import com.airijko.endlessskills.combat.NonDamageItemConfiguration;
+import com.airijko.endlessskills.combat.Weapon;
+import com.airijko.endlessskills.combat.WeaponDamageConfiguration;
+import com.airijko.endlessskills.leveling.LevelingManager;
 import com.airijko.endlessskills.managers.ConfigManager;
 import com.airijko.endlessskills.managers.PlayerDataManager;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.ArrayList;
@@ -24,11 +27,20 @@ public class SkillAttributes {
     private final JavaPlugin plugin;
     private final ConfigManager configManager;
     private final PlayerDataManager playerDataManager;
+    private final LevelingManager levelingManager;
 
-    public SkillAttributes(JavaPlugin plugin, ConfigManager configManager, PlayerDataManager playerDataManager) {
+    public static final String LIFE_FORCE = "Life_Force";
+    public static final String STRENGTH = "Strength";
+    public static final String TENACITY = "Tenacity";
+    public static final String HASTE = "Haste";
+    public static final String PRECISION = "Precision";
+    public static final String FEROCITY = "Ferocity";
+
+    public SkillAttributes(JavaPlugin plugin, ConfigManager configManager, PlayerDataManager playerDataManager, LevelingManager levelingManager ) {
         this.plugin = plugin;
         this.configManager = configManager;
         this.playerDataManager = playerDataManager;
+        this.levelingManager = levelingManager;
     }
 
     private void modifyAttribute(Player player, int level, String configKey, Attribute attribute) {
@@ -41,12 +53,29 @@ public class SkillAttributes {
         }
     }
 
-    double getAttributeValue(String configKey, int level) {
+    public double getAttributeValue(String configKey, int level) {
         return configManager.getConfig().getDouble(configKey, 0.0) * level;
     }
 
     public void modifyLifeForce(Player player, int level) {
         modifyAttribute(player, level, "skill_attributes.life_force", Attribute.GENERIC_MAX_HEALTH);
+    }
+
+    public void modifyStrength(Player player, int level, EntityDamageByEntityEvent event, ConfigManager configManager) {
+        Material weaponType = player.getInventory().getItemInMainHand().getType();
+        Weapon weapon;
+
+        if (weaponType == Material.BOW) {
+            weapon = new BowDamageConfiguration(configManager);
+        } else if (weaponType.name().endsWith("_SWORD") || weaponType.name().endsWith("_AXE") || weaponType.name().endsWith("TRIDENT")) {
+            weapon = new WeaponDamageConfiguration(weaponType, configManager);
+        } else {
+            weapon = new NonDamageItemConfiguration(configManager);
+        }
+
+        double damageValue;
+        damageValue = weapon.modifyDamage(player, level, event); // Then apply the weapon damage modifier
+        event.setDamage(damageValue);
     }
 
     public void modifyTenacity(Player player, int level) {
@@ -107,17 +136,17 @@ public class SkillAttributes {
         resetAllAttributesToDefault(player);
 
         // Apply Life Force modifier
-        int lifeForceLevel = playerDataManager.getAttributeLevel(playerUUID, "Life_Force");
+        int lifeForceLevel = playerDataManager.getAttributeLevel(playerUUID, SkillAttributes.LIFE_FORCE);
         if (lifeForceLevel > 0) {
             modifyLifeForce(player, lifeForceLevel);
         }
 
         // Apply Tenacity modifier
-        int tenacityLevel = playerDataManager.getAttributeLevel(playerUUID, "Tenacity");
+        int tenacityLevel = playerDataManager.getAttributeLevel(playerUUID, SkillAttributes.TENACITY);
         modifyTenacity(player, tenacityLevel);
 
         // Apply Haste modifier
-        int hasteLevel = playerDataManager.getAttributeLevel(playerUUID, "Haste");
+        int hasteLevel = playerDataManager.getAttributeLevel(playerUUID, SkillAttributes.HASTE);
         modifyHaste(player, hasteLevel);
     }
 
@@ -141,6 +170,31 @@ public class SkillAttributes {
         resetAttribute(player, Attribute.GENERIC_KNOCKBACK_RESISTANCE, 0.0); // Default knockback resistance
         resetAttribute(player, Attribute.GENERIC_MOVEMENT_SPEED, 0.1); // Default movement speed
         resetAttribute(player, Attribute.GENERIC_ATTACK_SPEED, 4.0); // Default attack speed
+    }
+
+    public void resetSkillPoints(Player player) {
+        UUID playerUUID = player.getUniqueId();
+        int defaultLevel = 0; // Assuming the default level is 0
+
+        // Reset all attributes to default for the specific player
+        resetAllAttributesToDefault(player);
+
+        // Get the player's current level
+        int playerLevel = playerDataManager.getPlayerLevel(playerUUID);
+
+        // Calculate skill points based on level
+        int skillPoints = levelingManager.calculateSkillPointsBasedOnLevel(playerLevel);
+
+        // Set the calculated skill points
+        playerDataManager.setPlayerSkillPoints(playerUUID, skillPoints);
+
+        // Reset the attribute levels in the player data manager
+        playerDataManager.setAttributeLevel(playerUUID, SkillAttributes.LIFE_FORCE, defaultLevel);
+        playerDataManager.setAttributeLevel(playerUUID, SkillAttributes.STRENGTH, defaultLevel);
+        playerDataManager.setAttributeLevel(playerUUID, SkillAttributes.TENACITY, defaultLevel);
+        playerDataManager.setAttributeLevel(playerUUID, SkillAttributes.HASTE, defaultLevel);
+        playerDataManager.setAttributeLevel(playerUUID, SkillAttributes.PRECISION, defaultLevel);
+        playerDataManager.setAttributeLevel(playerUUID, SkillAttributes.FEROCITY, defaultLevel);
     }
 
     public void useSkillPoint(UUID playerUUID, String attributeName) {

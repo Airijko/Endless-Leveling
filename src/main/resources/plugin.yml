@@ -19,3 +19,6 @@ commands:
   level:
     description: Manages levels.
     usage: /<command>
+  resetskillpoints:
+    description: Resets the skill points.
+    usage: /<command>

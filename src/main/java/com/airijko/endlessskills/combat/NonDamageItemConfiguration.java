@@ -10,10 +10,11 @@ public class NonDamageItemConfiguration extends Weapon {
     }
 
     @Override
-    public void modifyDamage(Player player, int level, EntityDamageByEntityEvent event) {
+    public double modifyDamage(Player player, int level, EntityDamageByEntityEvent event) {
         double damageValue = event.getDamage();
         damageValue += getDamageModifier(player, level);
         event.setDamage(damageValue);
+        return damageValue;
     }
 
     @Override
