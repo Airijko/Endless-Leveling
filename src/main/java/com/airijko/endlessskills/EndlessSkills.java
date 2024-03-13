@@ -1,5 +1,7 @@
 package com.airijko.endlessskills;
 
+import com.airijko.endlesscore.EndlessCore;
+import com.airijko.endlesscore.managers.AttributeManager;
 import com.airijko.endlessskills.commands.EndlessCommand;
 import com.airijko.endlessskills.commands.ResetAttributesCommand;
 import com.airijko.endlessskills.gui.EndlessSkillsGUI;
@@ -11,21 +13,22 @@ import com.airijko.endlessskills.managers.ConfigManager;
 import com.airijko.endlessskills.leveling.XPConfiguration;
 import com.airijko.endlessskills.leveling.LevelConfiguration;
 import com.airijko.endlessskills.commands.ReloadCommand;
+import com.airijko.endlessskills.managers.PluginManager;
+import com.airijko.endlessskills.skills.EndlessSkillsModifierProvider;
 import com.airijko.endlessskills.skills.SkillAttributes;
 
 import com.airijko.endlessskills.listeners.MobEventListener;
-
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
 
 public final class EndlessSkills extends JavaPlugin {
-
+    private PluginManager pluginManager;
     private PlayerDataManager playerDataManager;
+    private EndlessSkillsModifierProvider endlessSkillsModifierProvider;
     private ConfigManager configManager;
     private LevelConfiguration levelConfiguration;
     private SkillAttributes skillAttributes;
-    private PlayerEventListener playerEventListener;
     private EndlessSkillsGUI endlessSkillsGUI;
     private LevelingManager levelingManager;
     private XPConfiguration xpConfiguration;
@@ -35,12 +38,14 @@ public final class EndlessSkills extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        configManager = new ConfigManager(this);
+        pluginManager = new PluginManager(this);
+        pluginManager.initializePlugin();
 
+        configManager = new ConfigManager(this);
         playerDataManager = new PlayerDataManager(this);
         levelConfiguration = new LevelConfiguration(this);
         skillAttributes = new SkillAttributes(this, configManager, playerDataManager);
-        playerEventListener = new PlayerEventListener(playerDataManager);
+        endlessSkillsModifierProvider = new EndlessSkillsModifierProvider(playerDataManager, skillAttributes);
         endlessSkillsGUI = new EndlessSkillsGUI(playerDataManager, skillAttributes);
         levelingManager = new LevelingManager(this, configManager, playerDataManager, levelConfiguration);
         xpConfiguration = new XPConfiguration(this);
@@ -52,7 +57,12 @@ public final class EndlessSkills extends JavaPlugin {
         playerDataManager.loadPlayerDataFolder();
         skillAttributes.applyModifiersToAllPlayers();
 
-        getServer().getPluginManager().registerEvents(new PlayerCombatListener(this, configManager, skillAttributes), this);
+        EndlessCore endlessCore = EndlessCore.getInstance();
+        AttributeManager attributeManager = endlessCore.getAttributeManager();
+        attributeManager.registerProvider(endlessSkillsModifierProvider);
+
+        getServer().getPluginManager().registerEvents(new PlayerEventListener(playerDataManager), this);
+        getServer().getPluginManager().registerEvents(new PlayerCombatListener(this, configManager, skillAttributes, playerDataManager), this);
         getServer().getPluginManager().registerEvents(new MobEventListener(xpConfiguration, levelingManager), this);
         getServer().getPluginManager().registerEvents(new BlockActivityListener(configManager, xpConfiguration, levelingManager), this);
         getServer().getPluginManager().registerEvents(new EndlessGUIListener(endlessSkillsGUI, skillAttributes), this);

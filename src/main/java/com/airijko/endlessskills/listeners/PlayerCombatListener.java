@@ -1,6 +1,7 @@
 package com.airijko.endlessskills.listeners;
 
 import com.airijko.endlessskills.combat.*;
+import com.airijko.endlessskills.managers.PlayerDataManager;
 import com.airijko.endlessskills.skills.SkillAttributes;
 import com.airijko.endlessskills.managers.ConfigManager;
 
@@ -24,12 +25,14 @@ public class PlayerCombatListener implements Listener {
     private final ConfigManager configManager;
     private final SkillAttributes skillAttributes;
     private final HashMap<UUID, Boolean> eventProcessed;
+    private final PlayerDataManager playerDataManager;
 
-    public PlayerCombatListener(JavaPlugin plugin, ConfigManager configManager, SkillAttributes skillAttributes) {
+    public PlayerCombatListener(JavaPlugin plugin, ConfigManager configManager, SkillAttributes skillAttributes, PlayerDataManager playerDataManager) {
         this.plugin = plugin;
         this.configManager = configManager;
         this.skillAttributes = skillAttributes;
         this.eventProcessed = new HashMap<>();
+        this.playerDataManager = playerDataManager;
     }
 
     @EventHandler
@@ -62,8 +65,8 @@ public class PlayerCombatListener implements Listener {
         }
 
         // Get the attribute levels
-        int precisionLevel = skillAttributes.getAttributeLevel(playerUUID, "Precision");
-        int strengthLevel = skillAttributes.getAttributeLevel(playerUUID, "Strength");
+        int precisionLevel = playerDataManager.getAttributeLevel(playerUUID, "Precision");
+        int strengthLevel = playerDataManager.getAttributeLevel(playerUUID, "Strength");
 
         Material weaponType = player.getInventory().getItemInMainHand().getType();
         Weapon weapon;
