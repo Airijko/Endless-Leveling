@@ -44,22 +44,7 @@ public class PlayerDataManager {
                 if (!result) {
                     plugin.getLogger().log(Level.SEVERE, "Failed to create player data file.");
                 }
-                YamlConfiguration playerDataConfig = YamlConfiguration.loadConfiguration(playerDataFile);
-                playerDataConfig.set("UUID", playerUUID.toString());
-                Player player = Bukkit.getPlayer(playerUUID);
-                String playerName = player != null ? player.getName() : "Unknown Player";
-                playerDataConfig.set("PlayerName", playerName);
-                playerDataConfig.set("XP", 0);
-                playerDataConfig.set("Level", 1);
-                playerDataConfig.set("Skill_Points", 5);
-                playerDataConfig.createSection("Attributes");
-                playerDataConfig.set("Attributes.Life_Force", 0);
-                playerDataConfig.set("Attributes.Strength", 0);
-                playerDataConfig.set("Attributes.Tenacity", 0);
-                playerDataConfig.set("Attributes.Haste", 0);
-                playerDataConfig.set("Attributes.Precision", 0);
-                playerDataConfig.set("Attributes.Ferocity", 0);
-                playerDataConfig.save(playerDataFile);
+                initializePlayerDataFile(playerDataFile, playerUUID);
             } catch (IOException e) {
                 plugin.getLogger().log(Level.SEVERE, "Failed to save player data", e);
             }
@@ -67,6 +52,24 @@ public class PlayerDataManager {
         return playerDataFile;
     }
 
+    private void initializePlayerDataFile(File playerDataFile, UUID playerUUID) throws IOException {
+        YamlConfiguration playerDataConfig = YamlConfiguration.loadConfiguration(playerDataFile);
+        playerDataConfig.set("UUID", playerUUID.toString());
+        Player player = Bukkit.getPlayer(playerUUID);
+        String playerName = player != null ? player.getName() : "Unknown Player";
+        playerDataConfig.set("PlayerName", playerName);
+        playerDataConfig.set("XP", 0);
+        playerDataConfig.set("Level", 1);
+        playerDataConfig.set("Skill_Points", 5);
+        playerDataConfig.createSection("Attributes");
+        playerDataConfig.set("Attributes.Life_Force", 0);
+        playerDataConfig.set("Attributes.Strength", 0);
+        playerDataConfig.set("Attributes.Tenacity", 0);
+        playerDataConfig.set("Attributes.Haste", 0);
+        playerDataConfig.set("Attributes.Precision", 0);
+        playerDataConfig.set("Attributes.Ferocity", 0);
+        playerDataConfig.save(playerDataFile);
+    }
     public void resetPlayerData(UUID playerUUID) {
         File playerDataFile = getPlayerDataFile(playerUUID);
         if (playerDataFile.exists()) {
@@ -151,11 +154,5 @@ public class PlayerDataManager {
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to save player data", e);
         }
-    }
-
-    public Set<String> getAttributeNames(UUID playerUUID) {
-        File playerDataFile = getPlayerDataFile(playerUUID);
-        YamlConfiguration playerDataConfig = YamlConfiguration.loadConfiguration(playerDataFile);
-        return Objects.requireNonNull(playerDataConfig.getConfigurationSection("Attributes")).getKeys(false);
     }
 }

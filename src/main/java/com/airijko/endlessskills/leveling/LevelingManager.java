@@ -99,10 +99,21 @@ public class LevelingManager {
         // Set the player's level
         playerDataManager.setPlayerLevel(playerUUID, newLevel);
 
-        // Set the player's skill points based on the new level and the skillPointsPerLevel value
-        int skillPointsPerLevel = levelConfiguration.getSkillPointsPerLevel();
-        int totalSkillPoints = newLevel * skillPointsPerLevel;
-        playerDataManager.setPlayerSkillPoints(playerUUID, totalSkillPoints);
+        // Calculate and set the player's skill points based on the new level
+        int skillPoints = calculateSkillPointsBasedOnLevel(newLevel);
+        playerDataManager.setPlayerSkillPoints(playerUUID, skillPoints);
+    }
+
+    public int calculateSkillPointsBasedOnLevel(int level) {
+        // Set the base skill points
+        int skillPoints = 5;
+
+        if (level > 1) {
+            int skillPointsPerLevel = levelConfiguration.getSkillPointsPerLevel();
+            skillPoints += (level) * skillPointsPerLevel;
+        }
+
+        return skillPoints;
     }
 
     private void displayXPGainedMessage(Player player, double newXP, double xpThresholdForNextLevel) {

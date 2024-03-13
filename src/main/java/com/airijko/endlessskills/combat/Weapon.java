@@ -14,13 +14,14 @@ public abstract class Weapon {
         this.configManager = configManager;
     }
 
-    public void modifyDamage(Player player, int level, EntityDamageByEntityEvent event) {
+    public double modifyDamage(Player player, int level, EntityDamageByEntityEvent event) {
         Material heldItem = player.getInventory().getItemInMainHand().getType();
         if (heldItem == weaponType) {
             double damageValue = event.getDamage();
             damageValue += getDamageModifier(player, level);
-            event.setDamage(damageValue);
+            return damageValue;
         }
+        return event.getDamage();
     }
 
     protected double getDamageModifier(Player player, int level) {
