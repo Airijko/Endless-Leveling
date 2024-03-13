@@ -8,6 +8,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -130,5 +132,30 @@ public class PlayerDataManager {
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to save player data", e);
         }
+    }
+
+    // Method to get the level of a specific attribute
+    public int getAttributeLevel(UUID playerUUID, String attributeName) {
+        File playerDataFile = getPlayerDataFile(playerUUID);
+        YamlConfiguration playerDataConfig = YamlConfiguration.loadConfiguration(playerDataFile);
+        return playerDataConfig.getInt("Attributes." + attributeName, 0);
+    }
+
+    // Method to set the level of a specific attribute
+    public void setAttributeLevel(UUID playerUUID, String attributeName, int level) {
+        File playerDataFile = getPlayerDataFile(playerUUID);
+        YamlConfiguration playerDataConfig = YamlConfiguration.loadConfiguration(playerDataFile);
+        playerDataConfig.set("Attributes." + attributeName, level);
+        try {
+            playerDataConfig.save(playerDataFile);
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to save player data", e);
+        }
+    }
+
+    public Set<String> getAttributeNames(UUID playerUUID) {
+        File playerDataFile = getPlayerDataFile(playerUUID);
+        YamlConfiguration playerDataConfig = YamlConfiguration.loadConfiguration(playerDataFile);
+        return Objects.requireNonNull(playerDataConfig.getConfigurationSection("Attributes")).getKeys(false);
     }
 }

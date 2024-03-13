@@ -41,7 +41,7 @@ public class SkillAttributes {
         }
     }
 
-    private double getAttributeValue(String configKey, int level) {
+    double getAttributeValue(String configKey, int level) {
         return configManager.getConfig().getDouble(configKey, 0.0) * level;
     }
 
@@ -100,7 +100,6 @@ public class SkillAttributes {
         }
     }
 
-
     public void applyModifierToPlayer(Player player) {
         UUID playerUUID = player.getUniqueId();
 
@@ -108,17 +107,17 @@ public class SkillAttributes {
         resetAllAttributesToDefault(player);
 
         // Apply Life Force modifier
-        int lifeForceLevel = getAttributeLevel(playerUUID, "Life_Force");
+        int lifeForceLevel = playerDataManager.getAttributeLevel(playerUUID, "Life_Force");
         if (lifeForceLevel > 0) {
             modifyLifeForce(player, lifeForceLevel);
         }
 
         // Apply Tenacity modifier
-        int tenacityLevel = getAttributeLevel(playerUUID, "Tenacity");
+        int tenacityLevel = playerDataManager.getAttributeLevel(playerUUID, "Tenacity");
         modifyTenacity(player, tenacityLevel);
 
         // Apply Haste modifier
-        int hasteLevel = getAttributeLevel(playerUUID, "Haste");
+        int hasteLevel = playerDataManager.getAttributeLevel(playerUUID, "Haste");
         modifyHaste(player, hasteLevel);
     }
 
@@ -157,7 +156,7 @@ public class SkillAttributes {
             // Send a message to the player indicating the attribute level has increased
             Player player = Bukkit.getPlayer(playerUUID);
             if (player != null) {
-                sendLevelUpMessage(player, attributeName, getAttributeLevel(playerUUID, attributeName));
+                sendLevelUpMessage(player, attributeName, playerDataManager.getAttributeLevel(playerUUID, attributeName));
                 applyModifierToPlayer(player);
             }
         } else {
@@ -174,8 +173,8 @@ public class SkillAttributes {
     }
 
     private void increaseAttributeLevel(UUID playerUUID, String attributeName) {
-        int currentAttributeLevel = getAttributeLevel(playerUUID, attributeName);
-        setAttributeLevel(playerUUID, attributeName, currentAttributeLevel + 1);
+        int currentAttributeLevel = playerDataManager.getAttributeLevel(playerUUID, attributeName);
+        playerDataManager.setAttributeLevel(playerUUID, attributeName, currentAttributeLevel + 1);
     }
 
     private void sendLevelUpMessage(Player player, String attributeName, int newLevel) {
@@ -190,25 +189,6 @@ public class SkillAttributes {
         player.sendMessage(Component.text("Not enough skill points to level up ", NamedTextColor.RED)
                 .append(Component.text(attributeName, NamedTextColor.AQUA))
                 .append(Component.text(".", NamedTextColor.RED)));
-    }
-
-    // Method to get the level of a specific attribute
-    public int getAttributeLevel(UUID playerUUID, String attributeName) {
-        File playerDataFile = playerDataManager.getPlayerDataFile(playerUUID);
-        YamlConfiguration playerDataConfig = YamlConfiguration.loadConfiguration(playerDataFile);
-        return playerDataConfig.getInt("Attributes." + attributeName, 0);
-    }
-
-    // Method to set the level of a specific attribute
-    public void setAttributeLevel(UUID playerUUID, String attributeName, int level) {
-        File playerDataFile = playerDataManager.getPlayerDataFile(playerUUID);
-        YamlConfiguration playerDataConfig = YamlConfiguration.loadConfiguration(playerDataFile);
-        playerDataConfig.set("Attributes." + attributeName, level);
-        try {
-            playerDataConfig.save(playerDataFile);
-        } catch (IOException e) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to save player data", e);
-        }
     }
 
     public List<String> getSkillValueString(String attributeName, int level) {

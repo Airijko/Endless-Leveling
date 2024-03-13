@@ -81,5 +81,11 @@
           <artifactId>exp4j</artifactId>
           <version>0.4.8</version>
       </dependency>
+      <dependency>
+          <groupId>com.airijko</groupId>
+          <artifactId>EndlessCore</artifactId>
+          <version>1.0-SNAPSHOT</version>
+          <scope>provided</scope>
+      </dependency>
   </dependencies>
 </project>
