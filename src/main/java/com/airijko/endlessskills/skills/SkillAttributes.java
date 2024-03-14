@@ -7,20 +7,14 @@ import com.airijko.endlessskills.managers.PlayerDataManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SkillAttributes {
-    private final JavaPlugin plugin;
     private final ConfigManager configManager;
     private final PlayerDataManager playerDataManager;
     private final LevelingManager levelingManager;
@@ -32,8 +26,7 @@ public class SkillAttributes {
     public static final String PRECISION = "Precision";
     public static final String FEROCITY = "Ferocity";
 
-    public SkillAttributes(JavaPlugin plugin, ConfigManager configManager, PlayerDataManager playerDataManager, LevelingManager levelingManager ) {
-        this.plugin = plugin;
+    public SkillAttributes(ConfigManager configManager, PlayerDataManager playerDataManager, LevelingManager levelingManager ) {
         this.configManager = configManager;
         this.playerDataManager = playerDataManager;
         this.levelingManager = levelingManager;
