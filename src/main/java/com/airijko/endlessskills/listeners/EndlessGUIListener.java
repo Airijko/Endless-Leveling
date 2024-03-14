@@ -12,6 +12,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,21 +42,27 @@ public class EndlessGUIListener implements Listener {
 
                 // Handle attribute level increase
                 Player player = (Player) event.getWhoClicked();
-                UUID playerUUID = player.getUniqueId();
-
-                Map<String, Runnable> actionMap = new HashMap<>();
-                actionMap.put("Life_Force", () -> skillAttributes.useSkillPoint(playerUUID, "Life_Force"));
-                actionMap.put("Strength", () -> skillAttributes.useSkillPoint(playerUUID, "Strength"));
-                actionMap.put("Tenacity", () -> skillAttributes.useSkillPoint(playerUUID, "Tenacity"));
-                actionMap.put("Haste", () -> skillAttributes.useSkillPoint(playerUUID, "Haste"));
-                actionMap.put("Precision", () -> skillAttributes.useSkillPoint(playerUUID, "Precision"));
-                actionMap.put("Ferocity", () -> skillAttributes.useSkillPoint(playerUUID, "Ferocity"));
+                Map<String, Runnable> actionMap = getStringRunnableMap(player, skillAttributes);
 
                 handleAction(event, actionMap);
 
                 endlessSkillsGUI.skillAttributesGUI(player);
             }
         }
+    }
+
+    @NotNull
+    private static Map<String, Runnable> getStringRunnableMap(Player player, SkillAttributes skillAttributes) {
+        UUID playerUUID = player.getUniqueId();
+
+        Map<String, Runnable> actionMap = new HashMap<>();
+        actionMap.put("Life_Force", () -> skillAttributes.useSkillPoint(playerUUID, "Life_Force"));
+        actionMap.put("Strength", () -> skillAttributes.useSkillPoint(playerUUID, "Strength"));
+        actionMap.put("Tenacity", () -> skillAttributes.useSkillPoint(playerUUID, "Tenacity"));
+        actionMap.put("Haste", () -> skillAttributes.useSkillPoint(playerUUID, "Haste"));
+        actionMap.put("Precision", () -> skillAttributes.useSkillPoint(playerUUID, "Precision"));
+        actionMap.put("Ferocity", () -> skillAttributes.useSkillPoint(playerUUID, "Ferocity"));
+        return actionMap;
     }
 
     private void cancelItemMovement(InventoryClickEvent event) {
@@ -78,7 +85,7 @@ public class EndlessGUIListener implements Listener {
                 String displayName = GsonComponentSerializer.gson().serialize(Objects.requireNonNull(itemMeta.displayName()));
                 Gson gson = new Gson();
                 JsonObject jsonObject = gson.fromJson(displayName, JsonObject.class);
-                String text = jsonObject.get("text").getAsString();
+                String text = jsonObject.get("text").getAsString().replace(" ", "_");
 
                 Runnable action = actionMap.get(text);
                 if (action != null) {
