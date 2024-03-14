@@ -53,7 +53,7 @@ public final class EndlessSkills extends JavaPlugin {
         reloadCMD = new ReloadCMD(configManager, endlessSkillsGUI, xpConfiguration, levelConfiguration);
         levelCMD = new LevelCMD(playerDataManager, levelingManager);
         resetAttributesCommand = new DefaultResetVanillaCMD();
-        resetSkillPointsCMD = new ResetSkillPointsCMD(skillAttributes, levelingManager);
+        resetSkillPointsCMD = new ResetSkillPointsCMD(skillAttributes);
 
         levelConfiguration.loadLevelingConfiguration();
         playerDataManager.loadPlayerDataFolder();
