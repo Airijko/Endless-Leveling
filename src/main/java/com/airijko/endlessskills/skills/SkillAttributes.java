@@ -150,6 +150,22 @@ public class SkillAttributes {
                 .append(Component.text(".", NamedTextColor.RED)));
     }
 
+    public double getHasteAttackSpeed(int level) {
+        return getAttributeValue("skill_attributes.haste.attack_speed", level);
+    }
+
+    public double getHasteMovementSpeed(int level) {
+        return getAttributeValue("skill_attributes.haste.movement_speed", level);
+    }
+
+    public double getTenacityToughness(int level) {
+        return getAttributeValue("skill_attributes.tenacity.toughness", level);
+    }
+
+    public double getTenacityKnockbackResistance(int level) {
+        return getAttributeValue("skill_attributes.tenacity.knock_back_resistance", level);
+    }
+
     public List<String> getSkillValueString(String attributeName, int level) {
         List<String> skillValues = new ArrayList<>();
         switch (attributeName) {
