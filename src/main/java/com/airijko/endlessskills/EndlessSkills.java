@@ -58,6 +58,7 @@ public final class EndlessSkills extends JavaPlugin {
         levelConfiguration.loadLevelingConfiguration();
         playerDataManager.loadPlayerDataFolder();
 
+        // Registering the EndlessSkillsModifierProvider with the EndlessCore AttributeManager
         EndlessCore endlessCore = EndlessCore.getInstance();
         AttributeManager attributeManager = endlessCore.getAttributeManager();
         attributeManager.registerProvider(endlessSkillsModifierProvider);
