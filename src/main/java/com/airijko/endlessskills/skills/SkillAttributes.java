@@ -1,9 +1,5 @@
 package com.airijko.endlessskills.skills;
 
-import com.airijko.endlessskills.combat.BowDamageConfiguration;
-import com.airijko.endlessskills.combat.NonDamageItemConfiguration;
-import com.airijko.endlessskills.combat.Weapon;
-import com.airijko.endlessskills.combat.WeaponDamageConfiguration;
 import com.airijko.endlessskills.leveling.LevelingManager;
 import com.airijko.endlessskills.managers.ConfigManager;
 import com.airijko.endlessskills.managers.PlayerDataManager;
@@ -43,71 +39,9 @@ public class SkillAttributes {
         this.levelingManager = levelingManager;
     }
 
-    private void modifyAttribute(Player player, int level, String configKey, Attribute attribute) {
-        double attributeValue = getAttributeValue(configKey, level);
-        AttributeInstance attributeInstance = player.getAttribute(attribute);
-        if (attributeInstance != null) {
-            attributeInstance.setBaseValue(attributeInstance.getBaseValue() + attributeValue);
-        } else {
-            plugin.getLogger().log(Level.INFO, "Attribute " + attribute + " is not accessible for player " + player.getName());
-        }
-    }
-
     public double getAttributeValue(String configKey, int level) {
         return configManager.getConfig().getDouble(configKey, 0.0) * level;
     }
-
-    public void modifyLifeForce(Player player, int level) {
-        modifyAttribute(player, level, "skill_attributes.life_force", Attribute.GENERIC_MAX_HEALTH);
-    }
-
-    public void modifyStrength(Player player, int level, EntityDamageByEntityEvent event, ConfigManager configManager) {
-        Material weaponType = player.getInventory().getItemInMainHand().getType();
-        Weapon weapon;
-
-        if (weaponType == Material.BOW) {
-            weapon = new BowDamageConfiguration(configManager);
-        } else if (weaponType.name().endsWith("_SWORD") || weaponType.name().endsWith("_AXE") || weaponType.name().endsWith("TRIDENT")) {
-            weapon = new WeaponDamageConfiguration(weaponType, configManager);
-        } else {
-            weapon = new NonDamageItemConfiguration(configManager);
-        }
-
-        double damageValue;
-        damageValue = weapon.modifyDamage(player, level, event); // Then apply the weapon damage modifier
-        event.setDamage(damageValue);
-    }
-
-    public void modifyTenacity(Player player, int level) {
-        modifyAttribute(player, level, "skill_attributes.tenacity.toughness", Attribute.GENERIC_ARMOR_TOUGHNESS);
-        modifyAttribute(player, level, "skill_attributes.tenacity.knock_back_resistance", Attribute.GENERIC_KNOCKBACK_RESISTANCE);
-    }
-
-    public void modifyHaste(Player player, int level) {
-        modifyAttribute(player, level, "skill_attributes.haste.attack_speed", Attribute.GENERIC_ATTACK_SPEED);
-        modifyAttribute(player, level, "skill_attributes.haste.movement_speed", Attribute.GENERIC_MOVEMENT_SPEED);
-    }
-
-    public boolean modifyPrecision(int level) {
-        double precisionValue = getAttributeValue("skill_attributes.precision.critical_chance", level) / 100;
-        return Math.random() < precisionValue;
-    }
-
-    public void modifyFerocity(int level, EntityDamageByEntityEvent event, boolean isCriticalHit) {
-        if (isCriticalHit) {
-            double ferocityValue = getAttributeValue("skill_attributes.ferocity.critical_damage", level) / 100;
-            double damageValue = event.getDamage();
-            damageValue += damageValue * ferocityValue;
-            event.setDamage(damageValue);
-        }
-    }
-
-    public boolean handleCriticalHit(int level, EntityDamageByEntityEvent event) {
-        boolean isCriticalHit = modifyPrecision(level);
-        modifyFerocity(level, event, isCriticalHit);
-        return isCriticalHit;
-    }
-
     public double getModifiedValue(String attributeName, int level) {
         switch (attributeName) {
             case "Life_Force":
@@ -128,34 +62,6 @@ public class SkillAttributes {
                 return 0.0;
         }
     }
-
-    public void applyModifierToPlayer(Player player) {
-        UUID playerUUID = player.getUniqueId();
-
-        // Reset all attributes to default for the specific player
-        resetAllAttributesToDefault(player);
-
-        // Apply Life Force modifier
-        int lifeForceLevel = playerDataManager.getAttributeLevel(playerUUID, SkillAttributes.LIFE_FORCE);
-        if (lifeForceLevel > 0) {
-            modifyLifeForce(player, lifeForceLevel);
-        }
-
-        // Apply Tenacity modifier
-        int tenacityLevel = playerDataManager.getAttributeLevel(playerUUID, SkillAttributes.TENACITY);
-        modifyTenacity(player, tenacityLevel);
-
-        // Apply Haste modifier
-        int hasteLevel = playerDataManager.getAttributeLevel(playerUUID, SkillAttributes.HASTE);
-        modifyHaste(player, hasteLevel);
-    }
-
-    public void applyModifiersToAllPlayers() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            applyModifierToPlayer(player);
-        }
-    }
-
     private static void resetAttribute(Player player, Attribute attribute, double value) {
         AttributeInstance attributeInstance = player.getAttribute(attribute);
         if (attributeInstance != null) {
@@ -211,7 +117,6 @@ public class SkillAttributes {
             Player player = Bukkit.getPlayer(playerUUID);
             if (player != null) {
                 sendLevelUpMessage(player, attributeName, playerDataManager.getAttributeLevel(playerUUID, attributeName));
-                applyModifierToPlayer(player);
             }
         } else {
             // Send a message to the player indicating they don't have enough skill points
