@@ -46,7 +46,7 @@ public final class EndlessSkills extends JavaPlugin {
         playerDataManager = new PlayerDataManager(this);
         levelConfiguration = new LevelConfiguration(this);
         levelingManager = new LevelingManager(this, configManager, playerDataManager, levelConfiguration);
-        skillAttributes = new SkillAttributes(this, configManager, playerDataManager, levelingManager);
+        skillAttributes = new SkillAttributes(configManager, playerDataManager, levelingManager);
         endlessSkillsModifierProvider = new EndlessSkillsModifierProvider(playerDataManager, skillAttributes);
         endlessSkillsGUI = new EndlessSkillsGUI(playerDataManager, skillAttributes);
         xpConfiguration = new XPConfiguration(this);
