@@ -62,7 +62,6 @@ public final class EndlessSkills extends JavaPlugin {
         AttributeManager attributeManager = endlessCore.getAttributeManager();
         attributeManager.registerProvider(endlessSkillsModifierProvider);
 
-        getServer().getPluginManager().registerEvents(new PlayerEventListener(playerDataManager), this);
         getServer().getPluginManager().registerEvents(new MobEventListener(xpConfiguration, levelingManager), this);
         getServer().getPluginManager().registerEvents(new BlockActivityListener(configManager, xpConfiguration, levelingManager), this);
         getServer().getPluginManager().registerEvents(new EndlessGUIListener(endlessSkillsGUI, skillAttributes), this);
