@@ -51,9 +51,10 @@ public class EndlessSkillsGUI {
         for (int i = 0; i < attributes.size(); i++) {
             if (slotIndex == 13) slotIndex++;  // Skip slot 13 for the Nether Star
             String attribute = attributes.get(i);
+            String attributeWithSpace = attributes.get(i).replace("_", " ");
             int level = playerDataManager.getAttributeLevel(playerUUID, attribute);
             String description = skillAttributes.getAttributeDescription(attribute);
-            gui.setItem(slotIndex, createWoolItem(woolColors.get(i), textColors.get(i), attribute, String.valueOf(level), description, attribute));
+            gui.setItem(slotIndex, createWoolItem(woolColors.get(i), textColors.get(i), attributeWithSpace, String.valueOf(level), description, attribute));
             slotIndex++;
         }
 
@@ -79,9 +80,10 @@ public class EndlessSkillsGUI {
             List<Component> lore = new ArrayList<>();
             lore.add(Component.text("Level " + playerDataManager.getPlayerLevel(playerUUID), NamedTextColor.AQUA));
 
-            String[] attributes = {"Life_Force", "Strength", "Tenacity", "Haste", "Precision", "Ferocity"};
+            String[] attributes = {"Life Force", "Strength", "Tenacity", "Haste", "Precision", "Ferocity"};
             for (String attribute : attributes) {
-                int level = playerDataManager.getAttributeLevel(playerUUID, attribute);
+                String attributeWithUnderscores = attribute.replace(" ", "_");
+                int level = playerDataManager.getAttributeLevel(playerUUID, attributeWithUnderscores);
                 lore.add(Component.text(attribute + ": " + level, NamedTextColor.GRAY));
             }
 
