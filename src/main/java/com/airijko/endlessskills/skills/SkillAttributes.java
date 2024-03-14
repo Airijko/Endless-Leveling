@@ -1,5 +1,6 @@
 package com.airijko.endlessskills.skills;
 
+import com.airijko.endlesscore.EndlessCore;
 import com.airijko.endlessskills.leveling.LevelingManager;
 import com.airijko.endlessskills.managers.ConfigManager;
 import com.airijko.endlessskills.managers.PlayerDataManager;
@@ -75,9 +76,6 @@ public class SkillAttributes {
         UUID playerUUID = player.getUniqueId();
         int defaultLevel = 0; // Assuming the default level is 0
 
-        // Reset all attributes to default for the specific player
-        resetAllAttributesToDefault(player);
-
         // Get the player's current level
         int playerLevel = playerDataManager.getPlayerLevel(playerUUID);
 
@@ -94,6 +92,8 @@ public class SkillAttributes {
         playerDataManager.setAttributeLevel(playerUUID, SkillAttributes.HASTE, defaultLevel);
         playerDataManager.setAttributeLevel(playerUUID, SkillAttributes.PRECISION, defaultLevel);
         playerDataManager.setAttributeLevel(playerUUID, SkillAttributes.FEROCITY, defaultLevel);
+
+        EndlessCore.getInstance().getAttributeManager().applyAttributeModifiers(player);
     }
 
     public void useSkillPoint(UUID playerUUID, String attributeName) {
@@ -109,6 +109,7 @@ public class SkillAttributes {
             // Send a message to the player indicating the attribute level has increased
             Player player = Bukkit.getPlayer(playerUUID);
             if (player != null) {
+                EndlessCore.getInstance().getAttributeManager().applyAttributeModifiers(player);
                 sendLevelUpMessage(player, attributeName, playerDataManager.getAttributeLevel(playerUUID, attributeName));
             }
         } else {
