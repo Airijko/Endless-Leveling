@@ -1,6 +1,7 @@
 package com.airijko.endlessskills.skills;
 
 import com.airijko.endlesscore.EndlessCore;
+import com.airijko.endlesscore.managers.AttributeManager;
 import com.airijko.endlessskills.leveling.LevelingManager;
 import com.airijko.endlessskills.managers.ConfigManager;
 import com.airijko.endlessskills.managers.PlayerDataManager;
@@ -11,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
+
 import java.util.UUID;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,7 @@ public class SkillAttributes {
     private final ConfigManager configManager;
     private final PlayerDataManager playerDataManager;
     private final LevelingManager levelingManager;
-
+    private final AttributeManager attributeManager;
     public static final String LIFE_FORCE = "Life_Force";
     public static final String STRENGTH = "Strength";
     public static final String TENACITY = "Tenacity";
@@ -27,15 +29,17 @@ public class SkillAttributes {
     public static final String PRECISION = "Precision";
     public static final String FEROCITY = "Ferocity";
 
-    public SkillAttributes(ConfigManager configManager, PlayerDataManager playerDataManager, LevelingManager levelingManager ) {
+    public SkillAttributes(ConfigManager configManager, PlayerDataManager playerDataManager, LevelingManager levelingManager) {
         this.configManager = configManager;
         this.playerDataManager = playerDataManager;
         this.levelingManager = levelingManager;
+        this.attributeManager = EndlessCore.getInstance().getAttributeManager();
     }
 
     public double getAttributeValue(String configKey, int level) {
         return configManager.getConfig().getDouble(configKey, 0.0) * level;
     }
+
     public double getModifiedValue(String attributeName, int level) {
         switch (attributeName) {
             case "Life_Force":
@@ -56,6 +60,7 @@ public class SkillAttributes {
                 return 0.0;
         }
     }
+
     private static void resetAttribute(Player player, Attribute attribute, double value) {
         AttributeInstance attributeInstance = player.getAttribute(attribute);
         if (attributeInstance != null) {
@@ -108,10 +113,8 @@ public class SkillAttributes {
 
             // Send a message to the player indicating the attribute level has increased
             Player player = Bukkit.getPlayer(playerUUID);
-            if (player != null) {
-                EndlessCore.getInstance().getAttributeManager().applyAttributeModifiers(player);
-                sendLevelUpMessage(player, attributeName, playerDataManager.getAttributeLevel(playerUUID, attributeName));
-            }
+            assert player != null;
+            sendLevelUpMessage(player, attributeName, playerDataManager.getAttributeLevel(playerUUID, attributeName));
         } else {
             // Send a message to the player indicating they don't have enough skill points
             Player player = Bukkit.getPlayer(playerUUID);
@@ -128,6 +131,20 @@ public class SkillAttributes {
     private void increaseAttributeLevel(UUID playerUUID, String attributeName) {
         int currentAttributeLevel = playerDataManager.getAttributeLevel(playerUUID, attributeName);
         playerDataManager.setAttributeLevel(playerUUID, attributeName, currentAttributeLevel + 1);
+        Player player = Bukkit.getPlayer(playerUUID);
+        switch (attributeName) {
+            case LIFE_FORCE:
+                attributeManager.applyLifeForce(player);
+                break;
+            case TENACITY:
+                attributeManager.applyToughness(player);
+                attributeManager.applyKnockbackResistance(player);
+                break;
+            case HASTE:
+                attributeManager.applyMovementSpeed(player);
+                attributeManager.applyAttackSpeed(player);
+                break;
+        }
     }
 
     private void sendLevelUpMessage(Player player, String attributeName, int newLevel) {
