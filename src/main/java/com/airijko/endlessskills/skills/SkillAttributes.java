@@ -75,6 +75,7 @@ public class SkillAttributes {
         resetAttribute(player, Attribute.GENERIC_KNOCKBACK_RESISTANCE, 0.0); // Default knockback resistance
         resetAttribute(player, Attribute.GENERIC_MOVEMENT_SPEED, 0.1); // Default movement speed
         resetAttribute(player, Attribute.GENERIC_ATTACK_SPEED, 4.0); // Default attack speed
+        EndlessCore.getInstance().getAttributeManager().applyAttributeModifiers(player);
     }
 
     public void resetSkillPoints(Player player) {
