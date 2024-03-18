@@ -1,9 +1,12 @@
 package com.airijko.endlessskills.listeners;
 
+import com.airijko.endlesscore.permissions.Permissions;
+
 import com.airijko.endlessskills.leveling.LevelingManager;
 import com.airijko.endlessskills.leveling.XPConfiguration;
-
 import com.airijko.endlessskills.managers.ConfigManager;
+import com.airijko.endlessskills.settings.Config;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,12 +19,14 @@ import java.util.Set;
 
 public class BlockActivityListener implements Listener {
     private final ConfigManager configManager;
+    private final Permissions permissions;
     private final XPConfiguration xpConfiguration;
     private final LevelingManager levelingManager;
     private final Set<Location> playerPlacedBlocks;
 
-    public BlockActivityListener(ConfigManager configManager, XPConfiguration xpConfiguration, LevelingManager levelingManager) {
+    public BlockActivityListener(ConfigManager configManager, Permissions permissions, XPConfiguration xpConfiguration, LevelingManager levelingManager) {
         this.configManager = configManager;
+        this.permissions = permissions;
         this.xpConfiguration = xpConfiguration;
         this.levelingManager = levelingManager;
         this.playerPlacedBlocks = new HashSet<>();
@@ -44,8 +49,9 @@ public class BlockActivityListener implements Listener {
             return;
         }
 
-        boolean gainXPFromBlocks = configManager.getConfig().getBoolean("gain_xp_from_blocks", true);
-        if (!gainXPFromBlocks) {
+        boolean gainXPFromBlocks = configManager.getConfig().getBoolean(Config.GAIN_XP_FROM_BLOCKS.getPath(), true);
+        boolean soloLevelingEnabled = configManager.getConfig().getBoolean(Config.ENABLE_SOLO_LEVELING.getPath(), true);
+        if (!gainXPFromBlocks || (soloLevelingEnabled && !permissions.hasPermission(player, "endlessskills.gainxp.onblockbreak"))) {
             return; // If not, do not award the XP and return
         }
 
