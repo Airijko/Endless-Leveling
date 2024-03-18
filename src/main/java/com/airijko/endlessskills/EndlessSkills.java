@@ -8,8 +8,8 @@ import com.airijko.endlessskills.gui.EndlessSkillsGUI;
 import com.airijko.endlessskills.leveling.LevelingManager;
 import com.airijko.endlessskills.commands.LevelCMD;
 import com.airijko.endlessskills.listeners.*;
-import com.airijko.endlessskills.managers.PlayerDataManager;
 import com.airijko.endlessskills.managers.ConfigManager;
+import com.airijko.endlessskills.managers.PlayerDataManager;
 import com.airijko.endlessskills.leveling.XPConfiguration;
 import com.airijko.endlessskills.leveling.LevelConfiguration;
 import com.airijko.endlessskills.commands.ReloadCMD;
@@ -18,15 +18,16 @@ import com.airijko.endlessskills.providers.EndlessSkillsModifierProvider;
 import com.airijko.endlessskills.skills.SkillAttributes;
 import com.airijko.endlessskills.commands.ResetSkillPointsCMD;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
 
 public final class EndlessSkills extends JavaPlugin {
+    private ConfigManager configManager;
     private PluginManager pluginManager;
     private PlayerDataManager playerDataManager;
     private EndlessSkillsModifierProvider endlessSkillsModifierProvider;
-    private ConfigManager configManager;
     private LevelConfiguration levelConfiguration;
     private SkillAttributes skillAttributes;
     private EndlessSkillsGUI endlessSkillsGUI;
@@ -39,13 +40,13 @@ public final class EndlessSkills extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        configManager = new ConfigManager(this);
         pluginManager = new PluginManager(this);
         pluginManager.initializePlugin();
 
-        configManager = new ConfigManager(this);
         playerDataManager = new PlayerDataManager(this);
         levelConfiguration = new LevelConfiguration(this);
-        levelingManager = new LevelingManager(this, configManager, playerDataManager, levelConfiguration);
+        levelingManager = new LevelingManager(this, playerDataManager, levelConfiguration);
         skillAttributes = new SkillAttributes(configManager, playerDataManager, levelingManager);
         endlessSkillsModifierProvider = new EndlessSkillsModifierProvider(playerDataManager, skillAttributes);
         endlessSkillsGUI = new EndlessSkillsGUI(playerDataManager, skillAttributes);
@@ -55,6 +56,7 @@ public final class EndlessSkills extends JavaPlugin {
         resetAttributesCommand = new DefaultResetVanillaCMD();
         resetSkillPointsCMD = new ResetSkillPointsCMD(skillAttributes);
 
+        configManager.loadConfig();
         levelConfiguration.loadLevelingConfiguration();
         playerDataManager.loadPlayerDataFolder();
 

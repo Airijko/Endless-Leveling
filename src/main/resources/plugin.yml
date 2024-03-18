@@ -1,5 +1,5 @@
 name: EndlessSkills
-version: '1.3'
+version: '${project.version}'
 main: com.airijko.endlessskills.EndlessSkills
 depend: [EndlessCore]
 api-version: '1.20'

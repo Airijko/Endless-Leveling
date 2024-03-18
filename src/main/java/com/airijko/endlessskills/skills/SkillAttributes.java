@@ -2,9 +2,11 @@ package com.airijko.endlessskills.skills;
 
 import com.airijko.endlesscore.EndlessCore;
 import com.airijko.endlesscore.managers.AttributeManager;
+import com.airijko.endlessskills.EndlessSkills;
 import com.airijko.endlessskills.leveling.LevelingManager;
 import com.airijko.endlessskills.managers.ConfigManager;
 import com.airijko.endlessskills.managers.PlayerDataManager;
+import com.airijko.endlessskills.settings.Config;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -22,12 +24,20 @@ public class SkillAttributes {
     private final PlayerDataManager playerDataManager;
     private final LevelingManager levelingManager;
     private final AttributeManager attributeManager;
-    public static final String LIFE_FORCE = "Life_Force";
-    public static final String STRENGTH = "Strength";
-    public static final String TENACITY = "Tenacity";
-    public static final String HASTE = "Haste";
-    public static final String PRECISION = "Precision";
-    public static final String FEROCITY = "Ferocity";
+    private static final String LIFE_FORCE = "Life_Force";
+    private static final String STRENGTH = "Strength";
+    private static final String TENACITY = "Tenacity";
+    private static final String HASTE = "Haste";
+    private static final String PRECISION = "Precision";
+    private static final String FEROCITY = "Ferocity";
+    private static final String LIFE_FORCE_PATH = Config.LIFE_FORCE.getPath();
+    private static final String STRENGTH_PATH = Config.STRENGTH.getPath();
+    private static final String TOUGHNESS_PATH = Config.TENACITY_TOUGHNESS.getPath();
+    private static final String KNOCK_BACK_RESISTANCE_PATH = Config.TENACITY_KNOCK_BACK_RESISTANCE.getPath();
+    private static final String ATTACK_SPEED_PATH = Config.HASTE_ATTACK_SPEED.getPath();
+    private static final String MOVEMENT_SPEED_PATH = Config.HASTE_MOVEMENT_SPEED.getPath();
+    private static final String PRECISION_PATH = Config.PRECISION_CRITICAL_CHANCE.getPath();
+    private static final String FEROCITY_PATH = Config.FEROCITY_CRITICAL_DAMAGE.getPath();
 
     public SkillAttributes(ConfigManager configManager, PlayerDataManager playerDataManager, LevelingManager levelingManager) {
         this.configManager = configManager;
@@ -43,19 +53,19 @@ public class SkillAttributes {
     public double getModifiedValue(String attributeName, int level) {
         switch (attributeName) {
             case "Life_Force":
-                return getAttributeValue("skill_attributes.life_force", level);
+                return getAttributeValue(LIFE_FORCE_PATH, level);
             case "Strength":
-                return getAttributeValue("skill_attributes.strength", level);
+                return getAttributeValue(STRENGTH_PATH, level);
             case "Tenacity":
-                return getAttributeValue("skill_attributes.tenacity.toughness", level)
-                        + getAttributeValue("skill_attributes.tenacity.knock_back_resistance", level);
+                return getAttributeValue(TOUGHNESS_PATH, level)
+                        + getAttributeValue(KNOCK_BACK_RESISTANCE_PATH, level);
             case "Haste":
-                return getAttributeValue("skill_attributes.haste.attack_speed", level)
-                        + getAttributeValue("skill_attributes.haste.movement_speed", level);
+                return getAttributeValue(ATTACK_SPEED_PATH, level)
+                        + getAttributeValue(MOVEMENT_SPEED_PATH, level);
             case "Precision":
-                return getAttributeValue("skill_attributes.precision.critical_chance", level) / 100;
+                return getAttributeValue(PRECISION_PATH, level) / 100;
             case "Ferocity":
-                return getAttributeValue("skill_attributes.ferocity.critical_damage", level) / 100;
+                return getAttributeValue(FEROCITY_PATH, level) / 100;
             default:
                 return 0.0;
         }
@@ -166,23 +176,23 @@ public class SkillAttributes {
         List<String> skillValues = new ArrayList<>();
         switch (attributeName) {
             case "Tenacity":
-                double toughnessValue = getAttributeValue("skill_attributes.tenacity.toughness", level);
-                double knockBackResistanceValue = getAttributeValue("skill_attributes.tenacity.knock_back_resistance", level);
+                double toughnessValue = getAttributeValue(TOUGHNESS_PATH, level);
+                double knockBackResistanceValue = getAttributeValue(KNOCK_BACK_RESISTANCE_PATH, level);
                 skillValues.add("Toughness Value: " + String.format("%.2f", toughnessValue));
                 skillValues.add("Knockback Resistance Value: " + String.format("%.2f", knockBackResistanceValue));
                 break;
             case "Haste":
-                double attackSpeedValue = getAttributeValue("skill_attributes.haste.attack_speed", level);
-                double movementSpeedValue = getAttributeValue("skill_attributes.haste.movement_speed", level);
+                double attackSpeedValue = getAttributeValue(ATTACK_SPEED_PATH, level);
+                double movementSpeedValue = getAttributeValue(MOVEMENT_SPEED_PATH, level);
                 skillValues.add("Attack Speed Value: " + String.format("%.2f", attackSpeedValue));
                 skillValues.add("Movement Speed Value: " + String.format("%.2f", movementSpeedValue));
                 break;
             case "Precision":
-                double precisionValue = getAttributeValue("skill_attributes.precision.critical_chance", level);
+                double precisionValue = getAttributeValue(PRECISION_PATH, level);
                 skillValues.add("Critical Chance Value: " + String.format("%.2f", precisionValue) + "%");
                 break;
             case "Ferocity":
-                double ferocityValue = getAttributeValue("skill_attributes.ferocity.critical_damage", level);
+                double ferocityValue = getAttributeValue(FEROCITY_PATH, level);
                 skillValues.add("Critical Damage Value: " + "+" + String.format("%.2f", ferocityValue) + "%");
                 break;
             default:
@@ -196,17 +206,17 @@ public class SkillAttributes {
     public String getAttributeDescription(String attributeName) {
         switch (attributeName) {
             case "Life_Force":
-                return "Increases max health by " + getAttributeValue("skill_attributes.life_force", 1) + " per level.";
+                return "Increases max health by " + getAttributeValue(LIFE_FORCE_PATH, 1) + " per level.";
             case "Strength":
-                return "Increases attack damage by " + getAttributeValue("skill_attributes.strength", 1) + " per level.";
+                return "Increases attack damage by " + getAttributeValue(STRENGTH_PATH, 1) + " per level.";
             case "Tenacity":
-                return "Increases armor toughness by " + getAttributeValue("skill_attributes.tenacity.toughness", 1) + " and knockback resistance by " + getAttributeValue("skill_attributes.tenacity.knock_back_resistance", 1) + " per level.";
+                return "Increases armor toughness by " + getAttributeValue(TOUGHNESS_PATH, 1) + " and knockback resistance by " + getAttributeValue(KNOCK_BACK_RESISTANCE_PATH, 1) + " per level.";
             case "Haste":
-                return "Increases attack speed by " + getAttributeValue("skill_attributes.haste.attack_speed", 1) + " and movement speed by " + getAttributeValue("skill_attributes.haste.movement_speed", 1) + " per level.";
+                return "Increases attack speed by " + getAttributeValue(ATTACK_SPEED_PATH, 1) + " and movement speed by " + getAttributeValue(MOVEMENT_SPEED_PATH, 1) + " per level.";
             case "Precision":
-                return "Increase critical chance by " + getAttributeValue("skill_attributes.precision.critical_chance", 1) + "% per level.";
+                return "Increase critical chance by " + getAttributeValue(PRECISION_PATH, 1) + "% per level.";
             case "Ferocity":
-                return "Increase critical damage by " + getAttributeValue("skill_attributes.ferocity.critical_damage", 1) + "% per level.";
+                return "Increase critical damage by " + getAttributeValue(FEROCITY_PATH, 1) + "% per level.";
             default:
                 return "Description not found.";
         }

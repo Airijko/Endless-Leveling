@@ -2,8 +2,8 @@ package com.airijko.endlessskills.listeners;
 
 import com.airijko.endlessskills.leveling.LevelingManager;
 import com.airijko.endlessskills.leveling.XPConfiguration;
-import com.airijko.endlessskills.managers.ConfigManager;
 
+import com.airijko.endlessskills.managers.ConfigManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

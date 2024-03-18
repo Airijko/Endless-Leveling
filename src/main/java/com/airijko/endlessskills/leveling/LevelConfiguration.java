@@ -1,6 +1,6 @@
 package com.airijko.endlessskills.leveling;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import com.airijko.endlessskills.EndlessSkills;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -14,12 +14,12 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 
 public class LevelConfiguration {
 
-    private final JavaPlugin plugin;
+    private final EndlessSkills plugin;
     private String expression;
     private double base;
     private int skillPointsPerLevel;
 
-    public LevelConfiguration(JavaPlugin plugin) {
+    public LevelConfiguration(EndlessSkills plugin) {
         this.plugin = plugin;
         loadLevelingConfiguration();
     }
