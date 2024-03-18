@@ -1,7 +1,11 @@
 package com.airijko.endlessskills.listeners;
 
+import com.airijko.endlesscore.permissions.Permissions;
+
 import com.airijko.endlessskills.leveling.LevelingManager;
 import com.airijko.endlessskills.leveling.XPConfiguration;
+import com.airijko.endlessskills.settings.Config;
+import com.airijko.endlessskills.managers.ConfigManager;
 
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
@@ -11,10 +15,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 public class MobEventListener implements Listener {
+    private final ConfigManager configManager;
+    private final Permissions permissions;
     private final XPConfiguration xpConfiguration;
     private final LevelingManager levelingManager;
 
-    public MobEventListener(XPConfiguration xpConfiguration, LevelingManager levelingManager) {
+    public MobEventListener(ConfigManager configManager, Permissions permissions, XPConfiguration xpConfiguration, LevelingManager levelingManager) {
+        this.configManager = configManager;
+        this.permissions = permissions;
         this.xpConfiguration = xpConfiguration;
         this.levelingManager = levelingManager;
     }
@@ -30,14 +38,23 @@ public class MobEventListener implements Listener {
             // Check if the arrow was shot by a player
             if (arrow.getShooter() instanceof Player) {
                 Player player = (Player) arrow.getShooter();
-                handleEntityDeath(player, entity);
+                if (shouldHandleEntityDeath(player)) {
+                    handleEntityDeath(player, entity);
+                }
             }
         }
 
         // Check if the entity was killed by a player
         else if (killer != null) {
-            handleEntityDeath(killer, entity);
+            if (shouldHandleEntityDeath(killer)) {
+                handleEntityDeath(killer, entity);
+            }
         }
+    }
+
+    private boolean shouldHandleEntityDeath(Player player) {
+        boolean soloLevelingEnabled = configManager.getConfig().getBoolean(Config.ENABLE_SOLO_LEVELING.getPath(), true);
+        return !soloLevelingEnabled || permissions.hasPermission(player, "endlessskills.gainxp.onmobkill");
     }
 
     private void handleEntityDeath(Player player, LivingEntity entity) {
