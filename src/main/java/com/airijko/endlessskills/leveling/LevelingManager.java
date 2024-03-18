@@ -1,6 +1,6 @@
 package com.airijko.endlessskills.leveling;
 
-import com.airijko.endlessskills.managers.ConfigManager;
+import com.airijko.endlessskills.EndlessSkills;
 import com.airijko.endlessskills.managers.PlayerDataManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -22,16 +22,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class LevelingManager {
-    private final JavaPlugin plugin;
-    private final ConfigManager configManager;
+    private final EndlessSkills plugin;
     private final PlayerDataManager playerDataManager;
     private final LevelConfiguration levelConfiguration;
     private final Map<UUID, BossBar> playerBossBars = new HashMap<>();
     private final Map<UUID, BukkitTask> removalTasks = new HashMap<>();
 
-    public LevelingManager(JavaPlugin plugin, ConfigManager configManager, PlayerDataManager playerDataManager, LevelConfiguration levelConfiguration) {
+    public LevelingManager(EndlessSkills plugin, PlayerDataManager playerDataManager, LevelConfiguration levelConfiguration) {
         this.plugin = plugin;
-        this.configManager = configManager;
         this.playerDataManager = playerDataManager;
         this.levelConfiguration = levelConfiguration;
     }
@@ -169,7 +167,7 @@ public class LevelingManager {
 
     public void handleXP(Player player, double XPGain, boolean isFromBlock) {
         UUID playerUUID = player.getUniqueId();
-        boolean gainXPFromBlocks = configManager.getConfig().getBoolean("gain_xp_from_blocks", true);
+        boolean gainXPFromBlocks = plugin.getConfig().getBoolean("gain_xp_from_blocks", true);
         double currentXP = playerDataManager.getPlayerXP(playerUUID);
         double newXP = currentXP + XPGain;
 

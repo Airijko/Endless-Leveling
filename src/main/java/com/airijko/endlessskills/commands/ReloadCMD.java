@@ -34,7 +34,7 @@ public class ReloadCMD implements CommandExecutor {
                 // Reload the leveling formula configuration
                 levelConfiguration.loadLevelingConfiguration();
                 // Reload the plugin configuration
-                configManager.reloadConfig();
+                configManager.reload();
 
                 sender.sendMessage("EndlessSkills configuration has been reloaded!");
                 return true;
