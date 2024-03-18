@@ -2,6 +2,7 @@ package com.airijko.endlessskills;
 
 import com.airijko.endlesscore.EndlessCore;
 import com.airijko.endlesscore.managers.AttributeManager;
+import com.airijko.endlesscore.permissions.Permissions;
 import com.airijko.endlessskills.commands.EndlessCMD;
 import com.airijko.endlessskills.commands.DefaultResetVanillaCMD;
 import com.airijko.endlessskills.gui.EndlessSkillsGUI;
@@ -18,13 +19,13 @@ import com.airijko.endlessskills.providers.EndlessSkillsModifierProvider;
 import com.airijko.endlessskills.skills.SkillAttributes;
 import com.airijko.endlessskills.commands.ResetSkillPointsCMD;
 
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
 
 public final class EndlessSkills extends JavaPlugin {
     private ConfigManager configManager;
+    private Permissions permissions;
     private PluginManager pluginManager;
     private PlayerDataManager playerDataManager;
     private EndlessSkillsModifierProvider endlessSkillsModifierProvider;
@@ -41,6 +42,7 @@ public final class EndlessSkills extends JavaPlugin {
     @Override
     public void onEnable() {
         configManager = new ConfigManager(this);
+        permissions = new Permissions();
         pluginManager = new PluginManager(this);
         pluginManager.initializePlugin();
 
@@ -65,8 +67,8 @@ public final class EndlessSkills extends JavaPlugin {
         AttributeManager attributeManager = endlessCore.getAttributeManager();
         attributeManager.registerProvider(endlessSkillsModifierProvider);
 
-        getServer().getPluginManager().registerEvents(new MobEventListener(xpConfiguration, levelingManager), this);
-        getServer().getPluginManager().registerEvents(new BlockActivityListener(configManager, xpConfiguration, levelingManager), this);
+        getServer().getPluginManager().registerEvents(new MobEventListener(configManager, permissions, xpConfiguration, levelingManager), this);
+        getServer().getPluginManager().registerEvents(new BlockActivityListener(configManager, permissions, xpConfiguration, levelingManager), this);
         getServer().getPluginManager().registerEvents(new EndlessGUIListener(endlessSkillsGUI, skillAttributes), this);
 
         Objects.requireNonNull(getCommand("endless")).setExecutor(new EndlessCMD(endlessSkillsGUI, reloadCMD, resetAttributesCommand, levelCMD, resetSkillPointsCMD));
