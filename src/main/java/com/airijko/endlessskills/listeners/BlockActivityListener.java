@@ -52,13 +52,15 @@ public class BlockActivityListener implements Listener {
         boolean gainXPFromBlocks = configManager.getConfig().getBoolean(Config.GAIN_XP_FROM_BLOCKS.getPath(), true);
         boolean soloLevelingEnabled = configManager.getConfig().getBoolean(Config.ENABLE_SOLO_LEVELING.getPath(), true);
 
-        if (soloLevelingEnabled) {
-            if (!permissions.hasPermission(player, "endlessskills.sololeveling.free")
-                    || !permissions.hasPermission(player, "endlessskills.sololeveling.premium")) {
+        if (!soloLevelingEnabled) {
+            if (!gainXPFromBlocks) {
                 return;
             }
-        } else if (!gainXPFromBlocks) {
-            return;
+        } else {
+            if (!permissions.hasPermission(player, "endlessskills.sololeveling.free")
+                    && !permissions.hasPermission(player, "endlessskills.sololeveling.premium")) {
+                return;
+            }
         }
 
         // Get the block's name
