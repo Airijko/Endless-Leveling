@@ -54,7 +54,9 @@ public class MobEventListener implements Listener {
 
     private boolean shouldHandleEntityDeath(Player player) {
         boolean soloLevelingEnabled = configManager.getConfig().getBoolean(Config.ENABLE_SOLO_LEVELING.getPath(), true);
-        return !soloLevelingEnabled || permissions.hasPermission(player, "endlessskills.gainxp.onmobkill");
+        return !soloLevelingEnabled
+                || permissions.hasPermission(player, "endlessskills.gainxp.onmobkill")
+                || permissions.hasPermission(player, "endlessskills.sololeveling.premium");
     }
 
     private void handleEntityDeath(Player player, LivingEntity entity) {
