@@ -3,19 +3,19 @@ package com.airijko.endlessskills.listeners;
 import com.airijko.endlessskills.mechanics.SoloLevelingMechanic;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
-public class PlayerDeathListener implements Listener {
+public class PlayerRespawnListener implements Listener {
     private final SoloLevelingMechanic soloLevelingMechanic;
 
-    public PlayerDeathListener(SoloLevelingMechanic soloLevelingMechanic) {
+    public PlayerRespawnListener(SoloLevelingMechanic soloLevelingMechanic) {
         this.soloLevelingMechanic = soloLevelingMechanic;
     }
 
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event) {
-        Player player = event.getEntity();
-        soloLevelingMechanic.handlePlayerDeath(player);
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        soloLevelingMechanic.handleRespawn(player);
     }
 }
