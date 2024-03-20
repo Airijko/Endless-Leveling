@@ -19,11 +19,12 @@ public class SoloLevelingMechanic {
         this.permissions = permissions;
     }
 
-    public void handlePlayerDeath(Player player) {
+    public void handleRespawn(Player player) {
         if (!soloPlayer(player)) {
             soloLeveler(player);
         } else {
             removeSoloLeveler(player);
+            player.sendMessage("<red> You failed the System.");
         }
     }
 
@@ -31,7 +32,7 @@ public class SoloLevelingMechanic {
         double soloLevelChance = configManager.getConfig().getDouble(Config.SOLO_LEVEL_CHANCE.getPath(), 0.0);
 
         if (new Random().nextDouble() < soloLevelChance / 100) {
-            TitleDisplay.sendTitle(player, "THE SYSTEM HAS CHOSEN YOU", "You are now a Player!");
+            TitleDisplay.sendTitle(player, "<aqua><b> THE SYSTEM HAS CHOSEN YOU! </b></aqua>", "<yellow> You are now a Player </yellow>");
             permissions.grantPermission(player, "endlessskills.sololeveling.free");
         }
     }
