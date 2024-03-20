@@ -1,6 +1,7 @@
 package com.airijko.endlessskills;
 
 import com.airijko.endlesscore.EndlessCore;
+import com.airijko.endlesscore.interfaces.RespawnInterface;
 import com.airijko.endlesscore.managers.AttributeManager;
 import com.airijko.endlesscore.permissions.Permissions;
 
@@ -21,6 +22,7 @@ import com.airijko.endlessskills.providers.EndlessSkillsModifierProvider;
 import com.airijko.endlessskills.skills.SkillAttributes;
 import com.airijko.endlessskills.commands.ResetSkillPointsCMD;
 
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
@@ -71,8 +73,8 @@ public final class EndlessSkills extends JavaPlugin {
         AttributeManager attributeManager = endlessCore.getAttributeManager();
         attributeManager.registerProvider(endlessSkillsModifierProvider);
 
+        getServer().getServicesManager().register(RespawnInterface.class, soloLevelingMechanic, this, ServicePriority.Normal);
         getServer().getPluginManager().registerEvents(new MobEventListener(configManager, permissions, xpConfiguration, levelingManager), this);
-        getServer().getPluginManager().registerEvents(new PlayerRespawnListener(soloLevelingMechanic), this);
         getServer().getPluginManager().registerEvents(new BlockActivityListener(configManager, permissions, xpConfiguration, levelingManager), this);
         getServer().getPluginManager().registerEvents(new EndlessGUIListener(endlessSkillsGUI, skillAttributes), this);
 
