@@ -1,5 +1,6 @@
 package com.airijko.endlessskills.mechanics;
 
+import com.airijko.endlesscore.interfaces.RespawnInterface;
 import com.airijko.endlesscore.utils.TitleDisplay;
 
 import com.airijko.endlesscore.permissions.Permissions;
@@ -9,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Random;
 
-public class SoloLevelingMechanic {
+public class SoloLevelingMechanic implements RespawnInterface {
 
     private final ConfigManager configManager;
     private final Permissions permissions;
@@ -19,6 +20,7 @@ public class SoloLevelingMechanic {
         this.permissions = permissions;
     }
 
+    @Override
     public void handleRespawn(Player player) {
         if (!soloPlayer(player)) {
             soloLeveler(player);
