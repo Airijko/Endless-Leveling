@@ -6,6 +6,7 @@ import com.airijko.endlesscore.utils.TitleDisplay;
 import com.airijko.endlesscore.permissions.Permissions;
 import com.airijko.endlessskills.managers.ConfigManager;
 import com.airijko.endlessskills.settings.Config;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Random;
@@ -22,6 +23,7 @@ public class SoloLevelingMechanic implements RespawnInterface {
 
     @Override
     public void handleRespawn(Player player) {
+        Bukkit.getLogger().info("handleRespawn called for player: " + player.getName());
         if (!soloPlayer(player)) {
             soloLeveler(player);
         } else {
