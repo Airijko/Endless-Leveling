@@ -18,3 +18,4 @@ gain_xp_from_blocks: true
 
 # Solo Leveling Feature
 enable_solo_leveling: true
+solo_level_chance: 0.025

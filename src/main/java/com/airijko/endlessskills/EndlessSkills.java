@@ -3,6 +3,7 @@ package com.airijko.endlessskills;
 import com.airijko.endlesscore.EndlessCore;
 import com.airijko.endlesscore.managers.AttributeManager;
 import com.airijko.endlesscore.permissions.Permissions;
+
 import com.airijko.endlessskills.commands.EndlessCMD;
 import com.airijko.endlessskills.commands.DefaultResetVanillaCMD;
 import com.airijko.endlessskills.gui.EndlessSkillsGUI;
@@ -15,6 +16,7 @@ import com.airijko.endlessskills.leveling.XPConfiguration;
 import com.airijko.endlessskills.leveling.LevelConfiguration;
 import com.airijko.endlessskills.commands.ReloadCMD;
 import com.airijko.endlessskills.managers.PluginManager;
+import com.airijko.endlessskills.mechanics.SoloLevelingMechanic;
 import com.airijko.endlessskills.providers.EndlessSkillsModifierProvider;
 import com.airijko.endlessskills.skills.SkillAttributes;
 import com.airijko.endlessskills.commands.ResetSkillPointsCMD;
@@ -38,6 +40,7 @@ public final class EndlessSkills extends JavaPlugin {
     private DefaultResetVanillaCMD resetAttributesCommand;
     private LevelCMD levelCMD;
     private ResetSkillPointsCMD resetSkillPointsCMD;
+    private SoloLevelingMechanic soloLevelingMechanic;
 
     @Override
     public void onEnable() {
@@ -57,6 +60,7 @@ public final class EndlessSkills extends JavaPlugin {
         levelCMD = new LevelCMD(playerDataManager, levelingManager);
         resetAttributesCommand = new DefaultResetVanillaCMD();
         resetSkillPointsCMD = new ResetSkillPointsCMD(skillAttributes);
+        soloLevelingMechanic = new SoloLevelingMechanic(configManager, permissions);
 
         configManager.loadConfig();
         levelConfiguration.loadLevelingConfiguration();
@@ -68,6 +72,7 @@ public final class EndlessSkills extends JavaPlugin {
         attributeManager.registerProvider(endlessSkillsModifierProvider);
 
         getServer().getPluginManager().registerEvents(new MobEventListener(configManager, permissions, xpConfiguration, levelingManager), this);
+        getServer().getPluginManager().registerEvents(new PlayerRespawnListener(soloLevelingMechanic), this);
         getServer().getPluginManager().registerEvents(new BlockActivityListener(configManager, permissions, xpConfiguration, levelingManager), this);
         getServer().getPluginManager().registerEvents(new EndlessGUIListener(endlessSkillsGUI, skillAttributes), this);
 
