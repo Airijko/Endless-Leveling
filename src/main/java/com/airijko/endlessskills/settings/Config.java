@@ -12,7 +12,8 @@ public enum Config {
     PRECISION_CRITICAL_CHANCE("skill_attributes.precision.critical_chance", OptionType.DOUBLE),
     FEROCITY_CRITICAL_DAMAGE("skill_attributes.ferocity.critical_damage", OptionType.DOUBLE),
     GAIN_XP_FROM_BLOCKS("gain_xp_from_blocks", OptionType.BOOLEAN),
-    ENABLE_SOLO_LEVELING("enable_solo_leveling", OptionType.BOOLEAN);
+    ENABLE_SOLO_LEVELING("enable_solo_leveling", OptionType.BOOLEAN),
+    SOLO_LEVEL_CHANCE("solo_level_chance", OptionType.DOUBLE);
 
     private final String path;
     private final OptionType type;

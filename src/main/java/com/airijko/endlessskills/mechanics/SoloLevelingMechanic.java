@@ -1,27 +1,46 @@
 package com.airijko.endlessskills.mechanics;
 
+import com.airijko.endlesscore.utils.TitleDisplay;
+
 import com.airijko.endlesscore.permissions.Permissions;
-import com.airijko.endlessskills.managers.PlayerDataManager;
+import com.airijko.endlessskills.managers.ConfigManager;
+import com.airijko.endlessskills.settings.Config;
+import org.bukkit.entity.Player;
+
+import java.util.Random;
 
 public class SoloLevelingMechanic {
-    private PlayerDataManager playerDataManager;
-    private Permissions permissions;
 
-    public SoloLevelingMechanic(PlayerDataManager playerDataManager, Permissions permissions) {
-        this.playerDataManager = playerDataManager;
+    private final ConfigManager configManager;
+    private final Permissions permissions;
+
+    public SoloLevelingMechanic( ConfigManager configManager, Permissions permissions) {
+        this.configManager = configManager;
         this.permissions = permissions;
     }
 
-//    public void handlePlayerDeath() {
-//        if (!soloLeveler(player)) {
-//
-//        }
-//    }
+    public void handlePlayerDeath(Player player) {
+        if (!soloPlayer(player)) {
+            soloLeveler(player);
+        } else {
+            removeSoloLeveler(player);
+        }
+    }
 
     public void soloLeveler(Player player) {
-        if (permissions.hasPermission(player,"endlessskills.solo.leveling")) {
-            return true;
+        double soloLevelChance = configManager.getConfig().getDouble(Config.SOLO_LEVEL_CHANCE.getPath(), 0.0);
+
+        if (new Random().nextDouble() < soloLevelChance / 100) {
+            TitleDisplay.sendTitle(player, "THE SYSTEM HAS CHOSEN YOU", "You are now a Player!");
+            permissions.grantPermission(player, "endlessskills.sololeveling.free");
         }
-        return false;
+    }
+
+    public boolean soloPlayer(Player player) {
+        return permissions.hasPermission(player, "endlessskills.sololeveling.free");
+    }
+
+    public void removeSoloLeveler(Player player) {
+        permissions.removePermission(player, "endlessskills.sololeveling.free");
     }
 }
