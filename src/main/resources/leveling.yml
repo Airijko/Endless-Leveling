@@ -19,4 +19,4 @@ skills:
     attribute: life_force
   strength:
     name: Strength
-    description: Increases
+    description: Increases damage dealt.

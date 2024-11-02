@@ -1,8 +1,9 @@
 package com.airijko.endlessskills.managers;
 
 import com.airijko.endlessskills.EndlessSkills;
-import com.airijko.endlessskills.settings.Config;
 import org.bukkit.configuration.file.FileConfiguration;
+
+import java.io.File;
 
 public class ConfigManager {
     private final EndlessSkills plugin;
@@ -14,7 +15,12 @@ public class ConfigManager {
     }
 
     public void loadConfig() {
-        plugin.saveDefaultConfig();
+        File configFile = new File(plugin.getDataFolder(), "config.yml");
+        if (!configFile.exists()) {
+            plugin.saveDefaultConfig();
+        }
+
+        plugin.reloadConfig();
         config = plugin.getConfig();
     }
 
@@ -23,7 +29,6 @@ public class ConfigManager {
     }
 
     public void reload() {
-        plugin.reloadConfig();
-        config = plugin.getConfig();
+        loadConfig();
     }
 }

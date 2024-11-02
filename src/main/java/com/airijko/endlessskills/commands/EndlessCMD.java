@@ -8,18 +8,17 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import java.util.Map;
-
 import java.util.HashMap;
+import java.util.Arrays;
+import java.util.List;
 
 public class EndlessCMD implements CommandExecutor {
     private final Map<String, CommandExecutor> subCommands = new HashMap<>();
+    private static final List<String> PREFIXES = Arrays.asList("endless", "e");
 
-    public EndlessCMD(EndlessSkillsGUI gui, ReloadCMD reloadCMD , DefaultResetVanillaCMD defaultResetVanillaCMD, LevelCMD levelCMD, ResetSkillPointsCMD resetSkillPointsCMD) {
-        subCommands.put("reload", reloadCMD);
+    public EndlessCMD(EndlessSkillsGUI gui, LevelCMD levelCMD) {
         subCommands.put("skills", new SkillsCMD(gui));
-        subCommands.put("reset default", defaultResetVanillaCMD);
         subCommands.put("level", levelCMD);
-        subCommands.put("resetskillpoints", resetSkillPointsCMD);
     }
 
     @Override
@@ -31,7 +30,11 @@ public class EndlessCMD implements CommandExecutor {
                 return executor.onCommand(sender, command, label, args);
             }
         }
-        sender.sendMessage(Component.text("Usage: /endless [reload|skills|resetattributes|level]", NamedTextColor.RED));
+        sender.sendMessage(Component.text("Usage: /endless [reload|profile|resetattributes|level]", NamedTextColor.RED));
         return false;
+    }
+
+    public static int getBaseIndex(String label) {
+        return PREFIXES.contains(label.toLowerCase()) ? 1 : 0;
     }
 }

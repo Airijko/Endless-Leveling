@@ -18,17 +18,8 @@ public class PlayerDataManager {
 
     public PlayerDataManager(JavaPlugin plugin) {
         this.plugin = plugin;
-        loadPlayerDataFolder();
     }
 
-    public void loadPlayerDataFolder() {
-        File playerDataFolder = new File(plugin.getDataFolder(), "playerdata");
-        if (!playerDataFolder.exists()) {
-            if (!playerDataFolder.mkdir()) {
-                plugin.getLogger().log(Level.SEVERE, "Failed to create the playerdata folder.");
-            }
-        }
-    }
     public File getPlayerDataFile(UUID playerUUID) {
         File playerDataFolder = new File(plugin.getDataFolder(), "playerdata");
         if (!playerDataFolder.exists()) {

@@ -6,7 +6,8 @@ api-version: '1.20'
 commands:
   endless:
     description: Main command for EndlessSkills plugin.
-    usage: /<command> [reload|skills|resetattributes|level]
+    usage: /<command> [reload|skills|resetattributes|level|resetskillpoints]
+    aliases: [e]
   reload:
     description: Reloads the plugin.
     usage: /<command>
@@ -17,8 +18,8 @@ commands:
     description: Resets the attributes.
     usage: /<command>
   level:
-    description: Manages levels.
-    usage: /<command>
+    description: Command to manage player levels
+    usage: /<command> <set|reset> <player> [level]
   resetskillpoints:
     description: Resets the skill points.
     usage: /<command>

@@ -28,7 +28,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Objects;
 
 public final class EndlessSkills extends JavaPlugin {
-    private ConfigManager configManager;
     private Permissions permissions;
     private PluginManager pluginManager;
     private PlayerDataManager playerDataManager;
@@ -46,7 +45,9 @@ public final class EndlessSkills extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        configManager = new ConfigManager(this);
+        this.saveDefaultConfig();
+        ConfigManager configManager = new ConfigManager(this);
+
         permissions = new Permissions();
         pluginManager = new PluginManager(this);
         pluginManager.initializePlugin();
@@ -66,19 +67,20 @@ public final class EndlessSkills extends JavaPlugin {
 
         configManager.loadConfig();
         levelConfiguration.loadLevelingConfiguration();
-        playerDataManager.loadPlayerDataFolder();
 
         // Registering the EndlessSkillsModifierProvider with the EndlessCore AttributeManager
         EndlessCore endlessCore = EndlessCore.getInstance();
         AttributeManager attributeManager = endlessCore.getAttributeManager();
-        attributeManager.registerProvider(endlessSkillsModifierProvider);
+        attributeManager.registerProvider(endlessSkillsModifierProvider, "EndlessLeveling");
 
         getServer().getServicesManager().register(RespawnInterface.class, soloLevelingMechanic, this, ServicePriority.Normal);
         getServer().getPluginManager().registerEvents(new MobEventListener(configManager, permissions, xpConfiguration, levelingManager), this);
         getServer().getPluginManager().registerEvents(new BlockActivityListener(configManager, permissions, xpConfiguration, levelingManager), this);
         getServer().getPluginManager().registerEvents(new EndlessGUIListener(endlessSkillsGUI, skillAttributes), this);
 
-        Objects.requireNonNull(getCommand("endless")).setExecutor(new EndlessCMD(endlessSkillsGUI, reloadCMD, resetAttributesCommand, levelCMD, resetSkillPointsCMD));
+        LevelCMD levelCMD = new LevelCMD(playerDataManager, levelingManager);
+        Objects.requireNonNull(getCommand("endless")).setExecutor(new EndlessCMD(endlessSkillsGUI, levelCMD));
+        Objects.requireNonNull(getCommand("level")).setExecutor(levelCMD);
     }
 
     @Override

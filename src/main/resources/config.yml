@@ -17,5 +17,5 @@ skill_attributes:
 gain_xp_from_blocks: true
 
 # Solo Leveling Feature
-enable_solo_leveling: true
+enable_solo_leveling: false
 solo_level_chance: 0.025
