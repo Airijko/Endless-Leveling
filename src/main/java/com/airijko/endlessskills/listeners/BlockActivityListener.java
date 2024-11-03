@@ -1,15 +1,15 @@
 package com.airijko.endlessskills.listeners;
 
 import com.airijko.endlesscore.permissions.Permissions;
-
 import com.airijko.endlessskills.leveling.LevelingManager;
 import com.airijko.endlessskills.leveling.XPConfiguration;
 import com.airijko.endlessskills.managers.ConfigManager;
 import com.airijko.endlessskills.settings.Config;
-
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -34,18 +34,26 @@ public class BlockActivityListener implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        // When a block is placed, add its location to the set
-        playerPlacedBlocks.add(event.getBlock().getLocation());
+        Player player = event.getPlayer();
+        Location blockLocation = event.getBlock().getLocation();
+
+        // Track blocks placed by players
+        playerPlacedBlocks.add(blockLocation);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockMine(BlockBreakEvent event) {
         Player player = event.getPlayer();
         Location blockLocation = event.getBlock().getLocation();
 
-        // If the block was placed by a player, don't award XP
+        // Prevent XP gain if the block was placed by a player
         if (playerPlacedBlocks.contains(blockLocation)) {
             playerPlacedBlocks.remove(blockLocation);
+            return;
+        }
+
+        // Prevent creative mode players from gaining XP
+        if (player.getGameMode() == GameMode.CREATIVE) {
             return;
         }
 
