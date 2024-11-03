@@ -2,7 +2,6 @@ package com.airijko.endlessskills.skills;
 
 import com.airijko.endlesscore.EndlessCore;
 import com.airijko.endlesscore.managers.AttributeManager;
-import com.airijko.endlessskills.EndlessSkills;
 import com.airijko.endlessskills.leveling.LevelingManager;
 import com.airijko.endlessskills.managers.ConfigManager;
 import com.airijko.endlessskills.managers.PlayerDataManager;
@@ -15,6 +14,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.ArrayList;
 import java.util.List;
@@ -148,7 +148,7 @@ public class SkillAttributes {
                 attributeManager.applyLifeForce(player);
                 break;
             case TENACITY:
-                attributeManager.applyToughness(player);
+                attributeManager.getDamageReduction(player);
                 attributeManager.applyKnockbackResistance(player);
                 break;
             case HASTE:
@@ -176,9 +176,8 @@ public class SkillAttributes {
         List<String> skillValues = new ArrayList<>();
         switch (attributeName) {
             case "Tenacity":
-                double toughnessValue = getAttributeValue(TOUGHNESS_PATH, level);
                 double knockBackResistanceValue = getAttributeValue(KNOCK_BACK_RESISTANCE_PATH, level);
-                skillValues.add("Toughness Value: " + String.format("%.2f", toughnessValue));
+                skillValues.add("Damage Reduction Value: " + String.format("%.2f%%", attributeManager.getDamageReductionPercentage()));
                 skillValues.add("Knockback Resistance Value: " + String.format("%.2f", knockBackResistanceValue));
                 break;
             case "Haste":
@@ -203,6 +202,13 @@ public class SkillAttributes {
         return skillValues;
     }
 
+    public double getDamageReductionValueForNextLevel(double currentToughnessValue) {
+        double nextToughnessValue = currentToughnessValue + getAttributeValue(TOUGHNESS_PATH, 1); // Assuming each level increases toughness by 1
+        double currentDamageReduction = attributeManager.calculateDamageReduction(currentToughnessValue);
+        double nextDamageReduction = attributeManager.calculateDamageReduction(nextToughnessValue);
+        return (nextDamageReduction - currentDamageReduction);
+    }
+
     public String getAttributeDescription(String attributeName) {
         switch (attributeName) {
             case "Life_Force":
@@ -210,7 +216,7 @@ public class SkillAttributes {
             case "Strength":
                 return "Increases attack damage by " + getAttributeValue(STRENGTH_PATH, 1) + " per level.";
             case "Tenacity":
-                return "Increases armor toughness by " + getAttributeValue(TOUGHNESS_PATH, 1) + " and knockback resistance by " + getAttributeValue(KNOCK_BACK_RESISTANCE_PATH, 1) + " per level.";
+                return "Increases damage reduction by " + String.format("%.3f%%", getDamageReductionValueForNextLevel(1)) + " and knockback resistance by " + getAttributeValue(KNOCK_BACK_RESISTANCE_PATH, 1) + " per level.";
             case "Haste":
                 return "Increases attack speed by " + getAttributeValue(ATTACK_SPEED_PATH, 1) + " and movement speed by " + getAttributeValue(MOVEMENT_SPEED_PATH, 1) + " per level.";
             case "Precision":

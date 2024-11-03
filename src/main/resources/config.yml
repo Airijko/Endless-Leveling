@@ -4,7 +4,7 @@ skill_attributes:
   strength: 0.5
   tenacity:
     knockback_resistance: 0.003
-    toughness: 0.25
+    toughness: 0.5
   haste:
     attack_speed: 0.02
     movement_speed: 0.001
