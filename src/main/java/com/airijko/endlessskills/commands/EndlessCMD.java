@@ -16,9 +16,12 @@ public class EndlessCMD implements CommandExecutor {
     private final Map<String, CommandExecutor> subCommands = new HashMap<>();
     private static final List<String> PREFIXES = Arrays.asList("endless", "e");
 
-    public EndlessCMD(EndlessSkillsGUI gui, LevelCMD levelCMD) {
+    public EndlessCMD(EndlessSkillsGUI gui, LevelCMD levelCMD, DefaultResetVanillaCMD resetAttributesCommand, ResetSkillPointsCMD resetSkillPointsCMD, ReloadCMD reloadCMD) {
         subCommands.put("skills", new SkillsCMD(gui));
         subCommands.put("level", levelCMD);
+        subCommands.put("resetattributes", resetAttributesCommand);
+        subCommands.put("resetskillpoints", resetSkillPointsCMD);
+        subCommands.put("reload", reloadCMD);
     }
 
     @Override

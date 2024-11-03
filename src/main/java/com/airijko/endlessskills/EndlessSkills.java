@@ -5,22 +5,18 @@ import com.airijko.endlesscore.interfaces.RespawnInterface;
 import com.airijko.endlesscore.managers.AttributeManager;
 import com.airijko.endlesscore.permissions.Permissions;
 
-import com.airijko.endlessskills.commands.EndlessCMD;
-import com.airijko.endlessskills.commands.DefaultResetVanillaCMD;
+import com.airijko.endlessskills.commands.*;
 import com.airijko.endlessskills.gui.EndlessSkillsGUI;
 import com.airijko.endlessskills.leveling.LevelingManager;
-import com.airijko.endlessskills.commands.LevelCMD;
 import com.airijko.endlessskills.listeners.*;
 import com.airijko.endlessskills.managers.ConfigManager;
 import com.airijko.endlessskills.managers.PlayerDataManager;
 import com.airijko.endlessskills.leveling.XPConfiguration;
 import com.airijko.endlessskills.leveling.LevelConfiguration;
-import com.airijko.endlessskills.commands.ReloadCMD;
 import com.airijko.endlessskills.managers.PluginManager;
 import com.airijko.endlessskills.mechanics.SoloLevelingMechanic;
 import com.airijko.endlessskills.providers.EndlessSkillsModifierProvider;
 import com.airijko.endlessskills.skills.SkillAttributes;
-import com.airijko.endlessskills.commands.ResetSkillPointsCMD;
 
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -78,9 +74,12 @@ public final class EndlessSkills extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BlockActivityListener(configManager, permissions, xpConfiguration, levelingManager), this);
         getServer().getPluginManager().registerEvents(new EndlessGUIListener(endlessSkillsGUI, skillAttributes), this);
 
-        LevelCMD levelCMD = new LevelCMD(playerDataManager, levelingManager);
-        Objects.requireNonNull(getCommand("endless")).setExecutor(new EndlessCMD(endlessSkillsGUI, levelCMD));
+        SkillsCMD skillsCMD = new SkillsCMD(endlessSkillsGUI);
+        Objects.requireNonNull(getCommand("endless")).setExecutor(new EndlessCMD(endlessSkillsGUI, levelCMD, resetAttributesCommand, resetSkillPointsCMD, reloadCMD));
+        Objects.requireNonNull(getCommand("skills")).setExecutor(skillsCMD);
         Objects.requireNonNull(getCommand("level")).setExecutor(levelCMD);
+        Objects.requireNonNull(getCommand("resetattributes")).setExecutor(resetAttributesCommand);
+        Objects.requireNonNull(getCommand("resetskillpoints")).setExecutor(resetSkillPointsCMD);
     }
 
     @Override
