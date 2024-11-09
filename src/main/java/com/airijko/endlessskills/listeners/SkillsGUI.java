@@ -25,7 +25,7 @@ import java.util.*;
 public class SkillsGUI implements Listener {
     private final PlayerDataManager playerDataManager;
     private final SkillAttributes skillAttributes;
-    private Inventory gui;
+    private final Inventory gui;
 
     public SkillsGUI(PlayerDataManager playerDataManager, SkillAttributes skillAttributes) {
         this.playerDataManager = playerDataManager;
