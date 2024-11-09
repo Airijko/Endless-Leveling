@@ -1,5 +1,11 @@
 package com.airijko.endlessskills.leveling;
 
+import org.bukkit.Bukkit;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -65,9 +71,14 @@ public class XPConfiguration {
         }
     }
 
-    public double getXPForMob(String mobName) {
+    public double getXPForMob(Entity mob) {
         // Return the XP for the given mob, or the fallback value if the mob is not found
-        return mobXPMap.getOrDefault(mobName, fallbackXP);
+        if (mob instanceof LivingEntity) {
+            AttributeInstance maxHealthAttribute = ((LivingEntity) mob).getAttribute(Attribute.GENERIC_MAX_HEALTH);
+            return maxHealthAttribute != null ? maxHealthAttribute.getValue() : fallbackXP;
+        }
+
+        return mobXPMap.getOrDefault(mob.getName(), fallbackXP);
     }
 
     public double getXPForBlock(String blockName) {

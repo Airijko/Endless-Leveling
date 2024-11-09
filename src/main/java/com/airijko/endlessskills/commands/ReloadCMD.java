@@ -1,8 +1,8 @@
 package com.airijko.endlessskills.commands;
 
-import com.airijko.endlessskills.gui.EndlessSkillsGUI;
 import com.airijko.endlessskills.leveling.LevelConfiguration;
 import com.airijko.endlessskills.leveling.XPConfiguration;
+import com.airijko.endlessskills.listeners.SkillsGUI;
 import com.airijko.endlessskills.managers.ConfigManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -12,13 +12,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class ReloadCMD implements CommandExecutor {
     private final ConfigManager configManager;
-    private final EndlessSkillsGUI endlessSkillsGUI;
+    private final SkillsGUI skillsGUI;
     private final XPConfiguration xpConfiguration;
     private final LevelConfiguration levelConfiguration;
 
-    public ReloadCMD(ConfigManager configManager, EndlessSkillsGUI endlessSkillsGUI, XPConfiguration xpConfiguration, LevelConfiguration levelConfiguration) {
+    public ReloadCMD(ConfigManager configManager, SkillsGUI skillsGUI, XPConfiguration xpConfiguration, LevelConfiguration levelConfiguration) {
         this.configManager = configManager;
-        this.endlessSkillsGUI = endlessSkillsGUI;
+        this.skillsGUI = skillsGUI;
         this.xpConfiguration = xpConfiguration;
         this.levelConfiguration = levelConfiguration;
     }
@@ -28,7 +28,7 @@ public class ReloadCMD implements CommandExecutor {
         if (command.getName().equalsIgnoreCase("endless") && args.length > 0 && args[0].equalsIgnoreCase("reload")) {
             if (sender.hasPermission("endless.reload")) {
                 // Close the skills menu for any player who has it open
-                endlessSkillsGUI.closeForAllPlayers();
+                skillsGUI.closeForAllPlayers();
                 // Reload the XP configuration
                 xpConfiguration.loadXPConfiguration();
                 // Reload the leveling formula configuration

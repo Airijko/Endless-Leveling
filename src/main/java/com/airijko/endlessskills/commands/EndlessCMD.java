@@ -1,6 +1,5 @@
 package com.airijko.endlessskills.commands;
 
-import com.airijko.endlessskills.gui.EndlessSkillsGUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
@@ -16,8 +15,8 @@ public class EndlessCMD implements CommandExecutor {
     private final Map<String, CommandExecutor> subCommands = new HashMap<>();
     private static final List<String> PREFIXES = Arrays.asList("endless", "e");
 
-    public EndlessCMD(EndlessSkillsGUI gui, LevelCMD levelCMD, DefaultResetVanillaCMD resetAttributesCommand, ResetSkillPointsCMD resetSkillPointsCMD, ReloadCMD reloadCMD) {
-        subCommands.put("skills", new SkillsCMD(gui));
+    public EndlessCMD(SkillsCMD skillsCMD, LevelCMD levelCMD, DefaultResetVanillaCMD resetAttributesCommand, ResetSkillPointsCMD resetSkillPointsCMD, ReloadCMD reloadCMD) {
+        subCommands.put("skills", skillsCMD);
         subCommands.put("level", levelCMD);
         subCommands.put("resetattributes", resetAttributesCommand);
         subCommands.put("resetskillpoints", resetSkillPointsCMD);

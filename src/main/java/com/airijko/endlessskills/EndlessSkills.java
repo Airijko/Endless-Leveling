@@ -6,7 +6,6 @@ import com.airijko.endlesscore.managers.AttributeManager;
 import com.airijko.endlesscore.permissions.Permissions;
 
 import com.airijko.endlessskills.commands.*;
-import com.airijko.endlessskills.gui.EndlessSkillsGUI;
 import com.airijko.endlessskills.leveling.LevelingManager;
 import com.airijko.endlessskills.listeners.*;
 import com.airijko.endlessskills.managers.ConfigManager;
@@ -30,7 +29,6 @@ public final class EndlessSkills extends JavaPlugin {
     private EndlessSkillsModifierProvider endlessSkillsModifierProvider;
     private LevelConfiguration levelConfiguration;
     private SkillAttributes skillAttributes;
-    private EndlessSkillsGUI endlessSkillsGUI;
     private LevelingManager levelingManager;
     private XPConfiguration xpConfiguration;
     private ReloadCMD reloadCMD;
@@ -38,6 +36,7 @@ public final class EndlessSkills extends JavaPlugin {
     private LevelCMD levelCMD;
     private ResetSkillPointsCMD resetSkillPointsCMD;
     private SoloLevelingMechanic soloLevelingMechanic;
+    private SkillsGUI skillsGUI;
 
     @Override
     public void onEnable() {
@@ -53,13 +52,13 @@ public final class EndlessSkills extends JavaPlugin {
         levelingManager = new LevelingManager(this, playerDataManager, levelConfiguration);
         skillAttributes = new SkillAttributes(configManager, playerDataManager, levelingManager);
         endlessSkillsModifierProvider = new EndlessSkillsModifierProvider(playerDataManager, skillAttributes);
-        endlessSkillsGUI = new EndlessSkillsGUI(playerDataManager, skillAttributes);
         xpConfiguration = new XPConfiguration(this);
-        reloadCMD = new ReloadCMD(configManager, endlessSkillsGUI, xpConfiguration, levelConfiguration);
+        skillsGUI = new SkillsGUI(playerDataManager, skillAttributes);
         levelCMD = new LevelCMD(playerDataManager, levelingManager);
         resetAttributesCommand = new DefaultResetVanillaCMD();
         resetSkillPointsCMD = new ResetSkillPointsCMD(skillAttributes);
         soloLevelingMechanic = new SoloLevelingMechanic(configManager, permissions);
+        reloadCMD = new ReloadCMD(configManager, skillsGUI, xpConfiguration, levelConfiguration);
 
         configManager.loadConfig();
         levelConfiguration.loadLevelingConfiguration();
@@ -67,15 +66,17 @@ public final class EndlessSkills extends JavaPlugin {
         // Registering the EndlessSkillsModifierProvider with the EndlessCore AttributeManager
         EndlessCore endlessCore = EndlessCore.getInstance();
         AttributeManager attributeManager = endlessCore.getAttributeManager();
-        attributeManager.registerProvider(endlessSkillsModifierProvider, "EndlessLeveling");
+        attributeManager.registerProvider(endlessSkillsModifierProvider);
+
+        getServer().getPluginManager().registerEvents(skillsGUI, this);
 
         getServer().getServicesManager().register(RespawnInterface.class, soloLevelingMechanic, this, ServicePriority.Normal);
         getServer().getPluginManager().registerEvents(new MobEventListener(configManager, permissions, xpConfiguration, levelingManager), this);
         getServer().getPluginManager().registerEvents(new BlockActivityListener(configManager, permissions, xpConfiguration, levelingManager), this);
-        getServer().getPluginManager().registerEvents(new EndlessGUIListener(endlessSkillsGUI, skillAttributes), this);
+        getServer().getPluginManager().registerEvents(new SkillsGUI(playerDataManager, skillAttributes), this);
 
-        SkillsCMD skillsCMD = new SkillsCMD(endlessSkillsGUI);
-        Objects.requireNonNull(getCommand("endless")).setExecutor(new EndlessCMD(endlessSkillsGUI, levelCMD, resetAttributesCommand, resetSkillPointsCMD, reloadCMD));
+        SkillsCMD skillsCMD = new SkillsCMD(skillsGUI);
+        Objects.requireNonNull(getCommand("endless")).setExecutor(new EndlessCMD(skillsCMD, levelCMD, resetAttributesCommand, resetSkillPointsCMD, reloadCMD));
         Objects.requireNonNull(getCommand("skills")).setExecutor(skillsCMD);
         Objects.requireNonNull(getCommand("level")).setExecutor(levelCMD);
         Objects.requireNonNull(getCommand("resetattributes")).setExecutor(resetAttributesCommand);
@@ -85,8 +86,8 @@ public final class EndlessSkills extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        if (endlessSkillsGUI != null) {
-            endlessSkillsGUI.closeForAllPlayers();
+        if (skillsGUI != null) {
+            skillsGUI.closeForAllPlayers();
         }
     }
 }

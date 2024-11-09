@@ -60,11 +60,8 @@ public class MobEventListener implements Listener {
     }
 
     private void handleEntityDeath(Player player, LivingEntity entity) {
-        // Get the mob's name
-        String mobName = entity.getType().name();
-
         // Use the getXPForMob method from XPConfiguration to get the XP value for the mob
-        double xpForMob = xpConfiguration.getXPForMob(mobName);
+        double xpForMob = xpConfiguration.getXPForMob(entity);
 
         // Use the handleXP method from LevelingManager to add XP and handle level-ups
         levelingManager.handleXP(player, xpForMob, false);

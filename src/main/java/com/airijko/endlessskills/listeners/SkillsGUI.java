@@ -1,70 +1,114 @@
-package com.airijko.endlessskills.gui;
+package com.airijko.endlessskills.listeners;
 
-import com.airijko.endlessskills.managers.PlayerDataManager;
 import com.airijko.endlessskills.skills.SkillAttributes;
-
+import com.airijko.endlessskills.managers.PlayerDataManager;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
-public class EndlessSkillsGUI {
+public class SkillsGUI implements Listener {
     private final PlayerDataManager playerDataManager;
     private final SkillAttributes skillAttributes;
     private Inventory gui;
 
-    public EndlessSkillsGUI(PlayerDataManager playerDataManager, SkillAttributes skillAttributes) {
+    public SkillsGUI(PlayerDataManager playerDataManager, SkillAttributes skillAttributes) {
         this.playerDataManager = playerDataManager;
         this.skillAttributes = skillAttributes;
+
+        gui = Bukkit.createInventory(null, 27, Component.text("Endless Skills"));
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (!event.getInventory().equals(gui)) return;
+        if (event.getClickedInventory() != event.getInventory()) return;
+
+        event.setCancelled(true);
+        final ItemStack clickedItem = event.getCurrentItem();
+
+        if (clickedItem == null || clickedItem.getType().isAir()) return;
+        if (clickedItem.getType() == Material.WHITE_STAINED_GLASS_PANE) return;
+
+        Player player = (Player) event.getWhoClicked();
+        Map<String, Runnable> actionMap = getStringRunnableMap(player, skillAttributes);
+
+        handleAction(event, actionMap);
+
+        skillAttributesGUI(player);
+    }
+
+    @NotNull
+    private static Map<String, Runnable> getStringRunnableMap(Player player, SkillAttributes skillAttributes) {
+        UUID playerUUID = player.getUniqueId();
+
+        Map<String, Runnable> actionMap = new HashMap<>();
+        actionMap.put("Life_Force", () -> skillAttributes.useSkillPoint(playerUUID, "Life_Force"));
+        actionMap.put("Strength", () -> skillAttributes.useSkillPoint(playerUUID, "Strength"));
+        actionMap.put("Tenacity", () -> skillAttributes.useSkillPoint(playerUUID, "Tenacity"));
+        actionMap.put("Haste", () -> skillAttributes.useSkillPoint(playerUUID, "Haste"));
+        actionMap.put("Precision", () -> skillAttributes.useSkillPoint(playerUUID, "Precision"));
+        actionMap.put("Ferocity", () -> skillAttributes.useSkillPoint(playerUUID, "Ferocity"));
+        return actionMap;
+    }
+
+    private void handleAction(InventoryClickEvent event, Map<String, Runnable> actionMap) {
+        if (event.getCurrentItem() != null) {
+            ItemMeta itemMeta = event.getCurrentItem().getItemMeta();
+
+            if (itemMeta != null) {
+                String displayName = GsonComponentSerializer.gson().serialize(Objects.requireNonNull(itemMeta.displayName()));
+                Gson gson = new Gson();
+                JsonObject jsonObject = gson.fromJson(displayName, JsonObject.class);
+                String text = jsonObject.get("text").getAsString().replace(" ", "_");
+
+                Runnable action = actionMap.get(text);
+                if (action != null) {
+                    action.run();
+                }
+            }
+        }
     }
 
     public void skillAttributesGUI(Player player) {
         UUID playerUUID = player.getUniqueId();
-        // Retrieve the player's total skill points
         int totalSkillPoints = playerDataManager.getPlayerSkillPoints(player.getUniqueId());
 
-        // Create a new inventory with 9 slots (1 row)
-        gui = Bukkit.createInventory(null, InventoryType.CHEST, Component.text("Endless Skills"));
-
-        // Create a list of attribute names
         List<String> attributes = Arrays.asList("Life_Force", "Strength", "Tenacity", "Haste", "Precision", "Ferocity");
-
-        // Create a list of wool colors
         List<Material> woolColors = Arrays.asList(Material.RED_WOOL, Material.ORANGE_WOOL, Material.YELLOW_WOOL, Material.LIME_WOOL, Material.LIGHT_BLUE_WOOL, Material.BLUE_WOOL);
-
-        // Create a list of text colors
         List<NamedTextColor> textColors = Arrays.asList(NamedTextColor.RED, NamedTextColor.GOLD, NamedTextColor.YELLOW, NamedTextColor.GREEN, NamedTextColor.AQUA, NamedTextColor.AQUA);
 
-        // Iterate over the attributes list
         int slotIndex = 10;
         for (int i = 0; i < attributes.size(); i++) {
-            if (slotIndex == 13) slotIndex++;  // Skip slot 13 for the Nether Star
+            if (slotIndex == 13) slotIndex++;
             String attribute = attributes.get(i);
             String attributeWithSpace = attributes.get(i).replace("_", " ");
             int level = playerDataManager.getAttributeLevel(playerUUID, attribute);
-            String description = skillAttributes.getAttributeDescription(attribute);
+            String description = skillAttributes.getAttributeDescription(attribute, player);
             gui.setItem(slotIndex, createWoolItem(woolColors.get(i), textColors.get(i), attributeWithSpace, String.valueOf(level), description, attribute));
             slotIndex++;
         }
 
         ItemStack netherStar = createNetherStarItem(playerUUID, playerDataManager, totalSkillPoints);
-
         gui.setItem(13, netherStar);
 
         fillEmptySlots(gui);
 
-        // Open the GUI for the player
         player.openInventory(gui);
     }
 
@@ -114,10 +158,6 @@ public class EndlessSkillsGUI {
         return woolItem;
     }
 
-    public Inventory getInventory() {
-        return gui;
-    }
-
     private void fillEmptySlots(Inventory inventory) {
         ItemStack invisibleItem = new ItemStack(Material.WHITE_STAINED_GLASS_PANE);
         ItemMeta meta = invisibleItem.getItemMeta();
@@ -134,24 +174,13 @@ public class EndlessSkillsGUI {
     }
 
     public void closeForAllPlayers() {
-        Bukkit.getLogger().info("Closing skills GUI for all online players...");
-
-        Inventory guiInventory = getInventory(); // Get the custom GUI's inventory
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            Inventory openInventory = player.getOpenInventory().getTopInventory();
-            if (openInventory.equals(guiInventory)) { // Check if the open inventory is the custom GUI's inventory
-                player.closeInventory();
-                Bukkit.getLogger().info("Closed skills GUI for player: " + player.getName());
-            } else {
-                if (openInventory.getHolder() != null) {
-                    Bukkit.getLogger().info("Player " + player.getName() + " has a different inventory open: " + openInventory.getHolder().getClass().getName());
-                } else {
-                    Bukkit.getLogger().info("Player " + player.getName() + " has a different inventory open: null");
-                }
-            }
+        List<HumanEntity> viewers = new ArrayList<>(gui.getViewers());
+        for (HumanEntity viewer : viewers) {
+            viewer.closeInventory();
         }
+    }
 
-        Bukkit.getLogger().info("Finished closing skills GUI for all online players.");
+    public void openInventory(Player player) {
+        skillAttributesGUI(player);
     }
 }

@@ -178,7 +178,7 @@ public class SkillAttributes {
             case "Tenacity":
                 double knockBackResistanceValue = getAttributeValue(KNOCK_BACK_RESISTANCE_PATH, level);
                 skillValues.add("Damage Reduction Value: " + String.format("%.2f%%", attributeManager.getDamageReductionPercentage()));
-                skillValues.add("Knockback Resistance Value: " + String.format("%.2f", knockBackResistanceValue));
+                skillValues.add("Knockback Resistance Value: " + String.format("%.2f%%", knockBackResistanceValue * 100));
                 break;
             case "Haste":
                 double attackSpeedValue = getAttributeValue(ATTACK_SPEED_PATH, level);
@@ -202,21 +202,31 @@ public class SkillAttributes {
         return skillValues;
     }
 
-    public double getDamageReductionValueForNextLevel(double currentToughnessValue) {
-        double nextToughnessValue = currentToughnessValue + getAttributeValue(TOUGHNESS_PATH, 1); // Assuming each level increases toughness by 1
+    public double getDamageReductionValueForNextLevel(Player player) {
+        Map<String, Double> toughnessData = attributeManager.getProviderDataForAttribute(player, "Toughness");
+        double currentToughnessValue = toughnessData.values().stream().mapToDouble(Double::doubleValue).sum();
+        double nextToughnessValue = currentToughnessValue + getAttributeValue(TOUGHNESS_PATH, 1);
+
         double currentDamageReduction = attributeManager.calculateDamageReduction(currentToughnessValue);
         double nextDamageReduction = attributeManager.calculateDamageReduction(nextToughnessValue);
-        return (nextDamageReduction - currentDamageReduction);
+
+//        Bukkit.getLogger().info("Current Toughness Value: " + currentToughnessValue);
+//        Bukkit.getLogger().info("Next Toughness Value: " + nextToughnessValue);
+//        Bukkit.getLogger().info("Current Damage Reduction: " + currentDamageReduction);
+//        Bukkit.getLogger().info("Next Damage Reduction: " + nextDamageReduction);
+//        Bukkit.getLogger().info("Damage Reduction Difference: " + (nextDamageReduction - currentDamageReduction));
+
+        return nextDamageReduction - currentDamageReduction;
     }
 
-    public String getAttributeDescription(String attributeName) {
+    public String getAttributeDescription(String attributeName, Player player) {
         switch (attributeName) {
             case "Life_Force":
                 return "Increases max health by " + getAttributeValue(LIFE_FORCE_PATH, 1) + " per level.";
             case "Strength":
                 return "Increases attack damage by " + getAttributeValue(STRENGTH_PATH, 1) + " per level.";
             case "Tenacity":
-                return "Increases damage reduction by " + String.format("%.3f%%", getDamageReductionValueForNextLevel(1)) + " and knockback resistance by " + getAttributeValue(KNOCK_BACK_RESISTANCE_PATH, 1) + " per level.";
+                return "Increases damage reduction by " + String.format("%.2f%%", getDamageReductionValueForNextLevel(player)) + " and knockback resistance by " + String.format("%.2f%%", getAttributeValue(KNOCK_BACK_RESISTANCE_PATH, 1) * 100) + " per level.";
             case "Haste":
                 return "Increases attack speed by " + getAttributeValue(ATTACK_SPEED_PATH, 1) + " and movement speed by " + getAttributeValue(MOVEMENT_SPEED_PATH, 1) + " per level.";
             case "Precision":
