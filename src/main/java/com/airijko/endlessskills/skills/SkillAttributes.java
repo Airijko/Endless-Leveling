@@ -10,6 +10,7 @@ import com.airijko.endlessskills.settings.Config;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
@@ -90,6 +91,17 @@ public class SkillAttributes {
 
     public void resetSkillPoints(Player player) {
         UUID playerUUID = player.getUniqueId();
+        resetSkillPointsCommon(playerUUID);
+        EndlessCore.getInstance().getAttributeManager().applyAttributeModifiers(player);
+    }
+
+    public void resetSkillPoints(OfflinePlayer offlinePlayer) {
+        UUID playerUUID = offlinePlayer.getUniqueId();
+        resetSkillPointsCommon(playerUUID);
+        // No need to apply attribute modifiers for offline players
+    }
+
+    private void resetSkillPointsCommon(UUID playerUUID) {
         int defaultLevel = 0; // Assuming the default level is 0
 
         // Get the player's current level
@@ -108,8 +120,6 @@ public class SkillAttributes {
         playerDataManager.setAttributeLevel(playerUUID, SkillAttributes.HASTE, defaultLevel);
         playerDataManager.setAttributeLevel(playerUUID, SkillAttributes.PRECISION, defaultLevel);
         playerDataManager.setAttributeLevel(playerUUID, SkillAttributes.FEROCITY, defaultLevel);
-
-        EndlessCore.getInstance().getAttributeManager().applyAttributeModifiers(player);
     }
 
     public void useSkillPoint(UUID playerUUID, String attributeName) {

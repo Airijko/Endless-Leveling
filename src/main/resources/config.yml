@@ -1,6 +1,6 @@
 # config.yml
 skill_attributes:
-  life_force: 1.0
+  life_force: 2.0
   strength: 0.5
   tenacity:
     knockback_resistance: 0.003

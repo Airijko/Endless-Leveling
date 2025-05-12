@@ -17,6 +17,7 @@ public class LevelConfiguration {
     private final EndlessSkills plugin;
     private String expression;
     private double base;
+    private int baseSkillPoints;
     private int skillPointsPerLevel;
 
     public LevelConfiguration(EndlessSkills plugin) {
@@ -41,7 +42,8 @@ public class LevelConfiguration {
         YamlConfiguration levelingConfig = YamlConfiguration.loadConfiguration(levelingFile);
         this.expression = levelingConfig.getString("default.expression", "base * ((log(level)+1) * (sqrt(level)))^2");
         this.base = levelingConfig.getDouble("default.base", 100.0);
-        this.skillPointsPerLevel = levelingConfig.getInt("skillPointsPerLevel", 3);
+        this.baseSkillPoints = levelingConfig.getInt("baseSkillPoints", 8);
+        this.skillPointsPerLevel = levelingConfig.getInt("skillPointsPerLevel", 4);
     }
 
     public double calculateThreshold(int level) {
