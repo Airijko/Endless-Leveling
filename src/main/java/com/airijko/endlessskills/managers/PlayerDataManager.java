@@ -113,26 +113,14 @@ public class PlayerDataManager {
     public int getPlayerSkillPoints(UUID playerUUID) {
         File playerDataFile = getPlayerDataFile(playerUUID);
         YamlConfiguration playerDataConfig = YamlConfiguration.loadConfiguration(playerDataFile);
-        return playerDataConfig.getInt("Skill_Points", 0); // Default Skills Points of Player
+        return playerDataConfig.getInt("Skill_Points", 0); // Default Base Skill Points
     }
 
     // Method to set the player's skill points
     public void setPlayerSkillPoints(UUID playerUUID, int skillPoints) {
-        File levelingFile = new File(plugin.getDataFolder(), "leveling.yml");
-        if (!levelingFile.exists()) {
-            plugin.getLogger().severe("leveling.yml file not found!");
-            return;
-        }
-
-        YamlConfiguration levelingConfig = YamlConfiguration.loadConfiguration(levelingFile);
-        int baseSkillPoints = levelingConfig.getInt("BaseSkillPoints", 8); // Default to 8 if not set
-
         File playerDataFile = getPlayerDataFile(playerUUID);
         YamlConfiguration playerDataConfig = YamlConfiguration.loadConfiguration(playerDataFile);
-
-        // Add baseSkillPoints to the provided skillPoints
-        playerDataConfig.set("Skill_Points", baseSkillPoints + skillPoints);
-
+        playerDataConfig.set("Skill_Points", skillPoints);
         try {
             playerDataConfig.save(playerDataFile);
         } catch (IOException e) {
