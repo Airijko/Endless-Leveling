@@ -18,23 +18,31 @@ public class ResetSkillPointsCMD implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        if (args.length > 0) {
-            if (args[0].equalsIgnoreCase("all")) {
-                // Reset skill points for all players (online and offline)
-                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    skillAttributes.resetSkillPoints(onlinePlayer);
-                }
-                for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
-                    if (offlinePlayer.hasPlayedBefore()) {
-                        skillAttributes.resetSkillPoints(offlinePlayer);
+        if (!(sender instanceof Player) || ((Player) sender).isOp()) {
+            if (args.length > 0) {
+                if (args[0].equalsIgnoreCase("all")) {
+                    // Reset skill points for all players (online and offline)
+                    for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                        skillAttributes.resetSkillPoints(onlinePlayer);
                     }
+                    for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
+                        if (offlinePlayer.hasPlayedBefore()) {
+                            skillAttributes.resetSkillPoints(offlinePlayer);
+                        }
+                    }
+                    sender.sendMessage("Reset skill points for all players (online and offline).");
                 }
-                sender.sendMessage("Reset skill points for all players (online and offline).");
+            } else {
+                if (sender instanceof Player) {
+                    Player player = (Player) sender;
+                    skillAttributes.resetSkillPoints(player);
+                    player.sendMessage("All attributes have been reset to their default values.");
+                } else {
+                    sender.sendMessage("This command can only be used by a player without arguments.");
+                }
             }
         } else {
-            Player player = (Player) sender;
-            skillAttributes.resetSkillPoints(player);
-            player.sendMessage("All attributes have been reset to their default values.");
+            sender.sendMessage("You do not have permission to use this command.");
         }
         return true;
     }

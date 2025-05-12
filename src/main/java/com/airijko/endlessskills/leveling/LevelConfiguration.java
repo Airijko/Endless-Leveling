@@ -58,6 +58,10 @@ public class LevelConfiguration {
         return e.evaluate();
     }
 
+    public int getBaseSkillPoints() {
+        return baseSkillPoints;
+    }
+
     public int getSkillPointsPerLevel() {
         return skillPointsPerLevel;
     }

@@ -104,7 +104,7 @@ public class LevelingManager {
 
     public int calculateSkillPointsBasedOnLevel(int level) {
         // Set the base skill points
-        int skillPoints = 5;
+        int skillPoints = levelConfiguration.getBaseSkillPoints();
 
         if (level > 1) {
             int skillPointsPerLevel = levelConfiguration.getSkillPointsPerLevel();
