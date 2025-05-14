@@ -71,9 +71,13 @@ public final class EndlessSkills extends JavaPlugin {
         getServer().getPluginManager().registerEvents(skillsGUI, this);
 
         getServer().getServicesManager().register(RespawnInterface.class, soloLevelingMechanic, this, ServicePriority.Normal);
+
+        getLogger().info("Registering RegenerationListener...");
         getServer().getPluginManager().registerEvents(new MobEventListener(configManager, permissions, xpConfiguration, levelingManager), this);
         getServer().getPluginManager().registerEvents(new BlockActivityListener(configManager, permissions, xpConfiguration, levelingManager), this);
         getServer().getPluginManager().registerEvents(new SkillsGUI(playerDataManager, skillAttributes), this);
+        getServer().getPluginManager().registerEvents(new RegenerationListener(playerDataManager, this), this);
+        getLogger().info("RegenerationListener registered.");
 
         SkillsCMD skillsCMD = new SkillsCMD(skillsGUI);
         Objects.requireNonNull(getCommand("endless")).setExecutor(new EndlessCMD(skillsCMD, levelCMD, resetAttributesCommand, resetSkillPointsCMD, reloadCMD));
