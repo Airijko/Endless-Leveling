@@ -17,6 +17,8 @@ import com.airijko.endlessskills.mechanics.SoloLevelingMechanic;
 import com.airijko.endlessskills.providers.EndlessSkillsModifierProvider;
 import com.airijko.endlessskills.skills.SkillAttributes;
 
+import com.airijko.endlessskills.placeholders.EndlessSkillsExpansion;
+
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -43,11 +45,17 @@ public final class EndlessSkills extends JavaPlugin {
         this.saveDefaultConfig();
         ConfigManager configManager = new ConfigManager(this);
 
+        // Register PlaceholderAPI expansion
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new EndlessSkillsExpansion(playerDataManager).register();
+            getLogger().info("PlaceholderAPI support enabled.");
+        }
+
         permissions = new Permissions();
         pluginManager = new PluginManager(this);
         pluginManager.initializePlugin();
 
-        playerDataManager = new PlayerDataManager(this);
+        playerDataManager = new PlayerDataManager(this, configManager);
         levelConfiguration = new LevelConfiguration(this);
         levelingManager = new LevelingManager(this, playerDataManager, levelConfiguration);
         skillAttributes = new SkillAttributes(configManager, playerDataManager, levelingManager);

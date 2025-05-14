@@ -2,6 +2,7 @@ package com.airijko.endlessskills.managers;
 
 import com.airijko.endlessskills.EndlessSkills;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 
@@ -26,6 +27,13 @@ public class ConfigManager {
 
     public FileConfiguration getConfig() {
         return config;
+    }
+    public FileConfiguration getLevelingConfig() {
+        File levelingFile = new File(plugin.getDataFolder(), "leveling.yml");
+        if (!levelingFile.exists()) {
+            plugin.saveResource("leveling.yml", false);
+        }
+        return YamlConfiguration.loadConfiguration(levelingFile);
     }
 
     public void reload() {
