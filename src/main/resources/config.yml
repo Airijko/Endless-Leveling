@@ -12,6 +12,7 @@ skill_attributes:
     critical_chance: 0.75
   ferocity:
     critical_damage: 1.5
+  regeneration: 2.0
 
 # Setting for enabling/disabling the xp gain from blocks
 gain_xp_from_blocks: true
