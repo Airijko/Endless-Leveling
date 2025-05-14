@@ -45,12 +45,6 @@ public final class EndlessSkills extends JavaPlugin {
         this.saveDefaultConfig();
         ConfigManager configManager = new ConfigManager(this);
 
-        // Register PlaceholderAPI expansion
-        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            new EndlessSkillsExpansion(playerDataManager).register();
-            getLogger().info("PlaceholderAPI support enabled.");
-        }
-
         permissions = new Permissions();
         pluginManager = new PluginManager(this);
         pluginManager.initializePlugin();
@@ -93,6 +87,12 @@ public final class EndlessSkills extends JavaPlugin {
         Objects.requireNonNull(getCommand("level")).setExecutor(levelCMD);
         Objects.requireNonNull(getCommand("resetattributes")).setExecutor(resetAttributesCommand);
         Objects.requireNonNull(getCommand("resetskillpoints")).setExecutor(resetSkillPointsCMD);
+
+        // Register PlaceholderAPI expansion
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new EndlessSkillsExpansion(playerDataManager).register();
+            getLogger().info("PlaceholderAPI support enabled.");
+        }
     }
 
     @Override
