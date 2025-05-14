@@ -37,7 +37,6 @@ public class EndlessSkillsExpansion extends PlaceholderExpansion {
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
         if (player == null) {
             return null;
-            // test
         }
 
         switch (params.toLowerCase()) {
