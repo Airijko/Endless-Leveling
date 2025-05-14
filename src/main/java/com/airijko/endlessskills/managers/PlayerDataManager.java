@@ -1,23 +1,23 @@
 package com.airijko.endlessskills.managers;
 
+import com.airijko.endlessskills.EndlessSkills;
 import com.airijko.endlessskills.skills.SkillAttributes;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
 public class PlayerDataManager {
-    private final JavaPlugin plugin;
+    private final EndlessSkills plugin;
+    private final ConfigManager configManager;
 
-    public PlayerDataManager(JavaPlugin plugin) {
+    public PlayerDataManager(EndlessSkills plugin, ConfigManager configManager) {
         this.plugin = plugin;
+        this.configManager = configManager;
     }
 
     public File getPlayerDataFile(UUID playerUUID) {
@@ -46,12 +46,13 @@ public class PlayerDataManager {
     private void initializePlayerDataFile(File playerDataFile, UUID playerUUID) throws IOException {
         YamlConfiguration playerDataConfig = YamlConfiguration.loadConfiguration(playerDataFile);
         playerDataConfig.set("UUID", playerUUID.toString());
+        int baseSkillPoints = configManager.getLevelingConfig().getInt("baseSkillPoints", 5);
         Player player = Bukkit.getPlayer(playerUUID);
         String playerName = player != null ? player.getName() : "Unknown Player";
         playerDataConfig.set("PlayerName", playerName);
         playerDataConfig.set("XP", 0);
         playerDataConfig.set("Level", 1);
-        playerDataConfig.set("Skill_Points", 5);
+        playerDataConfig.set("Skill_Points", baseSkillPoints);
         playerDataConfig.createSection("Attributes");
         playerDataConfig.set("Attributes.Life_Force", 0);
         playerDataConfig.set("Attributes.Strength", 0);
@@ -61,6 +62,7 @@ public class PlayerDataManager {
         playerDataConfig.set("Attributes.Ferocity", 0);
         playerDataConfig.save(playerDataFile);
     }
+
     public void resetPlayerData(UUID playerUUID) {
         File playerDataFile = getPlayerDataFile(playerUUID);
         if (playerDataFile.exists()) {
