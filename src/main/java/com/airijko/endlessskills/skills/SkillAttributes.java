@@ -11,6 +11,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
@@ -153,18 +154,23 @@ public class SkillAttributes {
         int currentAttributeLevel = playerDataManager.getAttributeLevel(playerUUID, attributeName);
         playerDataManager.setAttributeLevel(playerUUID, attributeName, currentAttributeLevel + 1);
         Player player = Bukkit.getPlayer(playerUUID);
-        switch (attributeName) {
-            case LIFE_FORCE:
-                attributeManager.applyLifeForce(player);
-                break;
-            case TENACITY:
-                attributeManager.getDamageReduction(player);
-                attributeManager.applyKnockbackResistance(player);
-                break;
-            case HASTE:
-                attributeManager.applyMovementSpeed(player);
-                attributeManager.applyAttackSpeed(player);
-                break;
+
+        if (player != null) {
+            // Play a sound effect
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2.0f, 1.0f);
+            switch (attributeName) {
+                case LIFE_FORCE:
+                    attributeManager.applyLifeForce(player);
+                    break;
+                case TENACITY:
+                    attributeManager.getDamageReduction(player);
+                    attributeManager.applyKnockbackResistance(player);
+                    break;
+                case HASTE:
+                    attributeManager.applyMovementSpeed(player);
+                    attributeManager.applyAttackSpeed(player);
+                    break;
+            }
         }
     }
 

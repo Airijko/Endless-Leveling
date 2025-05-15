@@ -20,8 +20,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class LevelingManager {
     private final EndlessSkills plugin;
@@ -59,9 +57,8 @@ public class LevelingManager {
                 .append(Component.text("Level " + newLevel, NamedTextColor.GOLD, TextDecoration.BOLD)));
 
         // Play a sound effect
-
-        // player.playSound(player.getLocation(), "minecraft:ui.toast.challenge_complete", 1.0f, 1.0f);
-        player.playSound(player.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 2.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 2.0f, 1.0f);
     }
 
     public boolean playerLevelUp(Player player) {
