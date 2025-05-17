@@ -17,6 +17,8 @@ skill_attributes:
 # Setting for enabling/disabling the xp gain from blocks
 gain_xp_from_blocks: true
 
-# Solo Leveling Feature
+# Solo Leveling Feature (Experimental)
+# This feature disables the leveling system unless they are considered a player.
+# Dying makes the player lose their levels and become a regular player.
 enable_solo_leveling: false
 solo_level_chance: 0.025
