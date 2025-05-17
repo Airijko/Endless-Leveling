@@ -3,21 +3,6 @@ default:
   expression: 'base * ((log(level)+1) * (sqrt(level)))^2'
   base: 50
 
-# Skill points gained per level. I don't recommend changing these values.
-# If you do, make sure to reset everyone to sync the skill points
+# If you change these values, make sure to reset everyone to sync the skill points by do "/resetskillpoints all"
 baseSkillPoints: 8
 skillPointsPerLevel: 4
-
-#skills:
-#  life_force:
-#    name: Life Force
-#    description: Increases maximum health.
-#    max_level: 100
-#    max_value: 100.0
-#    value_per_level: 1.0
-#    cost: 2
-#    icon: BARRIER
-#    attribute: life_force
-#  strength:
-#    name: Strength
-#    description: Increases damage dealt.
